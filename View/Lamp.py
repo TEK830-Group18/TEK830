@@ -1,23 +1,53 @@
 import tkinter as tk
+from PIL import Image, ImageTk
 
 
 
 class Lamp:
     def __init__(self, parent):
 
-
-        # Bulbs
-        self.bulbOFF = tk.PhotoImage(file = "TEK830/Images/OFF.png")
-        self.bulbON = tk.PhotoImage(file = "TEK830/Images/ON.png")
-
-        # Swithces
-        self.offPic = tk.PhotoImage(file = "TEK830/Images/SWITCHOFF.png")
-        self.btnOFF = tk.Button(parent, image = self.offPic, bd = 0, bg = "white")
-        self.btnOFF.pack(padx=50, pady= 50)
-
-        self.onPic = tk.PhotoImage(file = "TEK830/Images/SWITCHON.png")
-        self.btnON = tk.Button(parent, image = self.onPic, bd = 0, bg = "white")
-        self.btnON.pack(padx=50, pady= 50)
+        # Current state
+        self.currentState = "OFF"
 
 
+        # Bulb OFF image + resizing
+        bulbOFF_image = Image.open("TEK830/Images/OFF.png") 
+        bulbOFF_resized = bulbOFF_image.resize((300, 350))  
+        self.bulbOFF = ImageTk.PhotoImage(bulbOFF_resized)  
 
+        # Bulb ON image + resizing
+        bulbON_image = Image.open("TEK830/Images/ON.png")
+        bulbON_resized = bulbON_image.resize((300, 350))  
+        self.bulbON = ImageTk.PhotoImage(bulbON_resized)
+
+        # OFF Switch image + resizing
+        offPic_image = Image.open("TEK830/Images/SWITCHOFF.png")
+        offPic_resized = offPic_image.resize((120, 150))  
+        self.offPic = ImageTk.PhotoImage(offPic_resized)
+        
+        # ON switch image + resizing
+        onPic_image = Image.open("TEK830/Images/SWITCHON.png")
+        onPic_resized = onPic_image.resize((120, 150))  
+        self.onPic = ImageTk.PhotoImage(onPic_resized)
+
+
+        # Switch ON and OFF handler
+        self.btnToggle = tk.Button(parent, image = self.offPic, bd = 0, bg = "white", command = self.clickHandler)
+        self.btnToggle.place(x = 500, y = 150)
+        
+        # Light blulb ON and OFF handler
+        self.labelBulb = tk.Label(parent, image = self.bulbOFF, bg = "white")
+        self.labelBulb.place(x = 20, y = 20)
+
+
+    def clickHandler(self):
+
+        if self.currentState == "OFF":
+            self.currentState = "ON"
+            self.btnToggle.config(image = self.onPic)
+            self.labelBulb.config(image = self.bulbON)
+
+        else:
+            self.currentState = "OFF"
+            self.btnToggle.config(image = self.offPic)
+            self.labelBulb.config(image = self.bulbOFF)

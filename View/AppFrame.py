@@ -5,3 +5,4 @@ class AppFrame(tk.Tk):
         super().__init__()
         self.title('HÄRMAPA')
         self.geometry('1000x400')
+        self.configure(bg = "white")
