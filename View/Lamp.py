@@ -11,7 +11,7 @@ class Lamp:
         self.currentState = "OFF"
 
         # Image directory (cross-platforms path)
-        image_dir = os.path.join("TEK830", "Images")
+        image_dir = os.path.join("Images")
 
 
         # Bulb OFF image + resizing
