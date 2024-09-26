@@ -2,8 +2,6 @@ import tkinter as tk
 from PIL import Image, ImageTk
 import os
 
-
-
 class Lamp:
     def __init__(self, parent):
 
@@ -12,7 +10,6 @@ class Lamp:
 
         # Image directory (cross-platforms path)
         image_dir = os.path.join("Images")
-
 
         # Bulb OFF image + resizing
         bulbOFF_image = Image.open(os.path.join(image_dir, "OFF.png")) 
@@ -33,7 +30,6 @@ class Lamp:
         onPic_image = Image.open(os.path.join(image_dir, "SWITCHON.png"))
         onPic_resized = onPic_image.resize((120, 150))  
         self.onPic = ImageTk.PhotoImage(onPic_resized)
-
 
         # Switch ON and OFF handler
         self.btnToggle = tk.Button(parent, image = self.offPic, bd = 0, bg = "white", command = self.clickHandler)
