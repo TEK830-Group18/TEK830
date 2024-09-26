@@ -39,7 +39,6 @@ class Lamp:
         self.labelBulb = tk.Label(parent, image = self.bulbOFF, bg = "white")
         self.labelBulb.place(x = 20, y = 20)
 
-
     def clickHandler(self):
 
         if self.currentState == "OFF":
