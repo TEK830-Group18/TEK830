@@ -78,5 +78,3 @@ class AptLayout:
         self.aptLayoutLabel.place(x = 20, y = 15)
 
 
-
-
