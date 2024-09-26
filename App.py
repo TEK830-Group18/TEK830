@@ -11,6 +11,6 @@ def view():
     app.mainloop()
 
 if __name__ == "__main__":
-    modelThread: threading.Thread = threading.Thread(target=model())
-    viewThread: threading.Thread = threading.Thread(target=view())
+    model_thread: threading.Thread = threading.Thread(target=model())
+    view_thread: threading.Thread = threading.Thread(target=view())
     
