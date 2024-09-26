@@ -1,5 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk
+import os
 
 
 
@@ -9,24 +10,27 @@ class Lamp:
         # Current state
         self.currentState = "OFF"
 
+        # Image directory (cross-platforms path)
+        image_dir = os.path.join("TEK830", ".", "Images")
+
 
         # Bulb OFF image + resizing
-        bulbOFF_image = Image.open("TEK830/Images/OFF.png") 
+        bulbOFF_image = Image.open(os.path.join(image_dir, "OFF.png")) 
         bulbOFF_resized = bulbOFF_image.resize((300, 350))  
         self.bulbOFF = ImageTk.PhotoImage(bulbOFF_resized)  
 
         # Bulb ON image + resizing
-        bulbON_image = Image.open("TEK830/Images/ON.png")
+        bulbON_image = Image.open(os.path.join(image_dir, "ON.png"))
         bulbON_resized = bulbON_image.resize((300, 350))  
         self.bulbON = ImageTk.PhotoImage(bulbON_resized)
 
         # OFF Switch image + resizing
-        offPic_image = Image.open("TEK830/Images/SWITCHOFF.png")
+        offPic_image = Image.open(os.path.join(image_dir, "SWITCHOFF.png"))
         offPic_resized = offPic_image.resize((120, 150))  
         self.offPic = ImageTk.PhotoImage(offPic_resized)
         
         # ON switch image + resizing
-        onPic_image = Image.open("TEK830/Images/SWITCHON.png")
+        onPic_image = Image.open(os.path.join(image_dir, "SWITCHON.png"))
         onPic_resized = onPic_image.resize((120, 150))  
         self.onPic = ImageTk.PhotoImage(onPic_resized)
 
