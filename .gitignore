@@ -36,3 +36,6 @@ htmlcov/
 # IDE-specific files
 .vscode/
 .idea/
+
+# Pycache files
+*.__pycache__
