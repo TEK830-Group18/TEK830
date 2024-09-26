@@ -3,7 +3,7 @@ from model.model import Model
 import threading
 
 def model():
-    model = Model()
+    model = Model("data")
     model.mainloop()
 
 def view():
