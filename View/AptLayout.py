@@ -87,5 +87,3 @@ class AptLayout:
         self.aptLayoutLabel = tk.Label(parent, image = self.aptLayout)
         self.aptLayoutLabel.pack()
         self.aptLayoutLabel.place(x = 20, y = 10)
-
-
