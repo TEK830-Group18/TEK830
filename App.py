@@ -1,4 +1,5 @@
 from View.AppFrame import AppFrame
+from View.AptLayout import AptLayout as Apt
 from model.model import Model
 import threading
 
@@ -8,9 +9,9 @@ def model():
 
 def view():
     app = AppFrame()
+    apt = Apt(app)
     app.mainloop()
 
 if __name__ == "__main__":
     model_thread: threading.Thread = threading.Thread(target=model())
     view_thread: threading.Thread = threading.Thread(target=view())
-    
