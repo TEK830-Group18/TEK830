@@ -15,15 +15,26 @@ class AptLayout:
         # Apartment layout image
         self.aptLayoutPic = Image.open(os.path.join(image_dir, "AptLayout.png"))
 
+        # Resizing the layout image
+        aspect_ratio = self.aptLayoutPic.width / self.aptLayoutPic.height
+        old_width, old_height = self.aptLayoutPic.size
+        new_height = 380
+        new_width = int(aspect_ratio * new_height)
+        self.aptLayoutPic = self.aptLayoutPic.resize((new_width, new_height))
+
+        # Scaling factors 
+        self.scale_width = new_width / old_width
+        self.scale_height = new_height / old_height
+
         # Coordinate for rooms in the layout
         self.room_coordinations = {
-            "bedroom" : (170, 39, 257, 205),
-            "livingroom" : (140, 212, 257, 411),
-            "kitchen" : (35, 212, 140, 411),
-            "bathroom" : (35, 39, 120, 205),
-            "hall" : (125, 39, 170, 205)
+            "bedroom" : (128, 29, 192, 153),
+            "livingroom" : (90, 158, 192, 309),
+            "kitchen" : (26, 158, 90, 309),
+            "bathroom" : (26, 29, 90, 153),
+            "hall" : (95, 29, 127, 153)
         }
-
+        
         # Intial state of all rums (Dark)
         self.room_state = {
             room: True for room in self.room_coordinations
@@ -75,6 +86,6 @@ class AptLayout:
         self.aptLayout = ImageTk.PhotoImage(self.aptLayoutPic)
         self.aptLayoutLabel = tk.Label(parent, image = self.aptLayout)
         self.aptLayoutLabel.pack()
-        self.aptLayoutLabel.place(x = 20, y = 15)
+        self.aptLayoutLabel.place(x = 20, y = 10)
 
 
