@@ -4,8 +4,7 @@ import time
 class TimeWidget(tk.Frame):
     def __init__(self, parent, current_time):
         super().__init__(master=parent)
-        
-        self._timer_on: bool = True
+        self._timer_on: bool = False   
         self._current_time = current_time
 
         # Configure row and column
@@ -32,7 +31,7 @@ class TimeWidget(tk.Frame):
             self.after(1000,self.update_time)
         
     def start_timer(self):
-        self._timer_on == True
+        self._timer_on = True
         self.update_time()
     
     def stop_timer(self):
