@@ -27,3 +27,4 @@ class TimeWidget(tk.Frame):
         self._current_time = time.strftime('%H:%M:%S')
         self._time_label.config(text=self._current_time)
         self.after(1000,self.update_time)
+        
