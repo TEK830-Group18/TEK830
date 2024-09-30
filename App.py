@@ -13,10 +13,12 @@ def view():
     app = AppFrame()
     time_widget = TimeWidget(app, time.strftime('%H:%M:%S'))
     # Starts the clock
-    time_widget.update_time()
+    time_widget.start_timer()
+    
     
     apt = Apt(app)
     app.mainloop()
+
 
 if __name__ == "__main__":
     model_thread: threading.Thread = threading.Thread(target=model())
