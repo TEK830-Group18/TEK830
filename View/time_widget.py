@@ -19,8 +19,6 @@ class TimeWidget(tk.Frame):
     def set_time(self, new_time : time):
         self._current_time = new_time
 
-
-    
     def update_time(self):
         """ 
             Updates time after one second based on actual real time, should be changed to update time based on slider in the future.
@@ -29,5 +27,3 @@ class TimeWidget(tk.Frame):
         self._current_time = time.strftime('%H:%M:%S')
         self._time_label.config(text=self._current_time)
         self.after(1000,self.update_time)
-
-
