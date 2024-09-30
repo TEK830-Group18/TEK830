@@ -12,6 +12,7 @@ def model():
 def view():
     app = AppFrame()
     time_widget = TimeWidget(app, time.strftime('%H:%M:%S'))
+    # Starts the clock
     time_widget.update_time()
     
     apt = Apt(app)
