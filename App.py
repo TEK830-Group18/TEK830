@@ -14,9 +14,8 @@ def view():
     time_widget = TimeWidget(app, time.strftime('%H:%M:%S'))
     # Starts the clock
     time_widget.start_timer()
-    
-    
     apt = Apt(app)
+    # TODO probably need to override this mainloop method as it blocks any following code.
     app.mainloop()
 
 
