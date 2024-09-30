@@ -1,3 +1,4 @@
+import time
 from View.AppFrame import AppFrame
 from View.time_widget import TimeWidget
 from View.AptLayout import AptLayout as Apt
@@ -10,7 +11,7 @@ def model():
 
 def view():
     app = AppFrame()
-    time_widget = TimeWidget(app)
+    time_widget = TimeWidget(app, time.strftime('%H:%M:%S'))
     time_widget.update_time()
     
     apt = Apt(app)
