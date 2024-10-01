@@ -17,7 +17,7 @@ class TimeSlider(tk.Frame):
         # Create and add label to show time
         self._time_label = tk.Label(text=self.formatted_time)
         self._time_label.pack()
-        
+    
     def _update_values(self, a):
         slider_val = self._slider.get()
         self._hour = (slider_val // 60) % 24
@@ -27,3 +27,6 @@ class TimeSlider(tk.Frame):
         
     def _format_time(self, hour, minute, second) -> str:
         return str(hour).zfill(2) + ":" + str(minute).zfill(2) + ":" + str(second).zfill(2)
+    
+    def get_slider_value(self) -> int:
+        return self._slider.get()
