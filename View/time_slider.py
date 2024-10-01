@@ -24,6 +24,8 @@ class TimeSlider(tk.Frame):
         self._minute = slider_val % 60
         self.formatted_time = self.format_time(self._hour, self._minute, 0)
         self._time_label.config(text=self.formatted_time)
+        # TODO UPDATE OBSERVERS
+        #......................
         
     def _format_time(self, hour, minute, second) -> str:
         return str(hour).zfill(2) + ":" + str(minute).zfill(2) + ":" + str(second).zfill(2)
