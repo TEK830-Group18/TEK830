@@ -10,10 +10,11 @@ class Slider(tk.Frame):
         self.formatted_time = self.format_time(self._hour, self._minute, self._seconds)
         
         # init slider
-        self._slider = tk.Scale(parent, from_=0, to=1440, orient='horizontal', length=200)
+        self._slider = tk.Scale(parent, from_=0, to=1440, orient='horizontal', length=500)
         self._slider.config(command=self.update_slider)
         self._slider.pack()
         
+        # Create and add label to show time
         self._time_label = tk.Label(text=self.formatted_time)
         self._time_label.pack()
         
