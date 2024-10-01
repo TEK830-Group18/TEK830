@@ -1,3 +1,6 @@
+import json
+from typing import List
+from events.lamp_event import LampEvent
 
 class Model():
     def __init__(self, data) -> None:
@@ -8,8 +11,15 @@ class Model():
         #self.user_data = self.update_data()
         self.schedule = self.update_schedule(self.user_data)
 
-    def read_data(self, data):
-        pass
+    def read_data(self, path:str):
+        with open(path, mode='r') as f:
+            json_data = json.load(f)
+
+            events : List[LampEvent]= []
+            for e in json_data:
+                event = LampEvent.from_json(e)
+                events.append(event)
+        return events
 
     def update_schedule(self, data):
         pass
