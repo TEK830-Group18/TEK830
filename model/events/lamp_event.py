@@ -4,7 +4,7 @@ from marshmallow import Schema, fields, post_load
 import marshmallow_dataclass
 import marshmallow
 from datetime import datetime
-from lamp_action import LampAction
+from model.events.lamp_action import LampAction
 
 
 class LampEventSchema(Schema):
