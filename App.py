@@ -1,6 +1,6 @@
 from View.time_slider import TimeSlider
 from View.AppFrame import AppFrame
-from View.time_widget import TimeWidget
+from View.clock_widget import ClockWidget
 from View.AptLayout import AptLayout as Apt
 from model.model import Model
 import threading
@@ -15,10 +15,10 @@ def view():
     
     slider = TimeSlider(app)
     
-    time_widget = TimeWidget(app, slider)
-    slider.add_observer(time_widget)
+    clock_widget = ClockWidget(app, slider)
+    slider.add_observer(clock_widget)
     # Starts the clock
-    time_widget.start_timer()
+    clock_widget.start_timer()
     apt = Apt(app)
     
     # TODO probably need to override this mainloop method as it blocks any following code.

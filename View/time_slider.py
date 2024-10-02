@@ -23,6 +23,9 @@ class TimeSlider(tk.Frame, Observable):
         
     
     def _update_values(self, a):
+        """_summary_
+        Updates hours and minutes based on slider value, as well as notifying observers
+        """
         self.updating = True
         self._hour = self.get_hours()
         self._minute = self.get_minutes()
@@ -31,6 +34,16 @@ class TimeSlider(tk.Frame, Observable):
         self.updating = False
         
     def format_time(self, hour, minute, second) -> str:
+        """Formats hours, minutes and seconds as HH:MM:SS.
+
+        Args:
+            hour (int): 
+            minute (int): 
+            second (int): 
+
+        Returns:
+            str: time formatted as "HH:MM:SS"
+        """
         return str(hour).zfill(2) + ":" + str(minute).zfill(2) + ":" + str(second).zfill(2)
     
     def get_slider_value(self) -> int:

@@ -3,7 +3,7 @@ import tkinter as tk
 from View.observer import Observer
 from View.time_slider import TimeSlider
 
-class TimeWidget(tk.Frame, Observer):
+class ClockWidget(tk.Frame, Observer):
     def __init__(self, parent, controller : TimeSlider):
         super().__init__(master=parent)
         
@@ -26,7 +26,7 @@ class TimeWidget(tk.Frame, Observer):
 
         self.pack(pady=20)
             
-    def update_time(self):
+    def _update_time(self):
         if self._timer_on == True:
             if(self._seconds >= 60):
                 self._seconds = 0
@@ -43,7 +43,7 @@ class TimeWidget(tk.Frame, Observer):
             self._current_time = self._controller.format_time(self._hours, self._minutes, self._seconds)
             self._time_label.config(text=self._current_time)
             self._seconds += 1
-            tk.after_id = self.after(1000,self.update_time)
+            tk.after_id = self.after(1000,self._update_time)
     
     def _get_hours_from_int(self, time:int):
         return (time // 60) % 24
@@ -58,7 +58,7 @@ class TimeWidget(tk.Frame, Observer):
         self._minutes = self._get_minutes_from_int(slider_val)
         self._seconds = 0
         self._timer_on = True
-        self.update_time()
+        self._update_time()
         
     def stop_timer(self):
         self._current_time = self._controller.format_time(self._hours, self._minutes, self._seconds)
