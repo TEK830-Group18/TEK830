@@ -1,9 +1,9 @@
 import tkinter as tk
-import time
 
-from time_slider import TimeSlider
+from View.observer import Observer
+from View.time_slider import TimeSlider
 
-class TimeWidget(tk.Frame):
+class TimeWidget(tk.Frame, Observer):
     def __init__(self, parent, controller : TimeSlider):
         super().__init__(master=parent)
         
@@ -11,6 +11,10 @@ class TimeWidget(tk.Frame):
         
         self._timer_on: bool = False   
         self._current_time = controller.get_formatted_time()
+        
+        self._hours = 0
+        self._minutes = 0
+        self._seconds = 0
 
         # Configure row and column
         self.rowconfigure(0, weight=1)
@@ -22,45 +26,66 @@ class TimeWidget(tk.Frame):
 
         self.pack(pady=20)
 
-    def set_time(self, new_time : time):
+    def set_time(self, new_time):
         self._current_time = new_time
 
-    def update_time(self):
-        """ 
-            Updates time after one second based on actual real time, should be changed to update time based on slider in the future.
-        """
-        # TODO maybe make set current time in some other way in the future
-        if self._timer_on == True:
-            self._current_time = time.strftime('%H:%M:%S')
-            self._time_label.config(text=self._current_time)
-            self.after(1000,self.update_time)
+    # def update_time(self):
+    #     """ 
+    #         Updates time after one second based on actual real time, should be changed to update time based on slider in the future.
+    #     """
+    #     # TODO maybe make set current time in some other way in the future
+    #     if self._timer_on == True:
+    #         self._current_time = time.strftime('%H:%M:%S')
+    #         self._time_label.config(text=self._current_time)
+    #         self.after(1000,self.update_time)
             
     def update_time(self):
         if self._timer_on == True:
-            slider_val = self._controller.get_slider_value()
-            hours = (slider_val // 60) % 24
-            minutes = slider_val % 60
-            seconds = 0
-            while self._timer_on == True:
-                seconds += 1
-                if(seconds >= 60):
-                    seconds = 0
-                    minutes += 1
-                if(minutes >= 60):
-                    seconds = 0
-                    minutes = 0
-                    hours += 1
-                if(hours >= 24):
-                    seconds = 0
-                    minutes = 0
-                    hours = 0
-                time.sleep(1)
+            if(self._seconds >= 60):
+                self._seconds = 0
+                self._minutes += 1                
+            if(self._minutes >= 60):
+                self._seconds = 0
+                self._minutes = 0
+                self._hours += 1
+            if(self._hours >= 24):
+                self._seconds = 0
+                self._minutes = 0
+                self._hours = 0
+            self._seconds += 1
+        
+            #TODO WHATS THIS
+            self._current_time = self._controller._format_time(self._hours, self._minutes, self._seconds)
+            self._time_label.config(text=self._current_time)
+            tk.after_id = self.after(1000,self.update_time)
+    
+    def _get_hours_from_int(self, time:int):
+        return (time // 60) % 24
+    
+    def _get_minutes_from_int(self, time:int):
+        return (time % 60)
+           
         
     def start_timer(self):
+        slider_val = self._controller.get_slider_value()
+        self._hours = self._get_hours_from_int(slider_val)
+        self._minutes = self._get_minutes_from_int(slider_val)
+        self._seconds = 0
         self._timer_on = True
         self.update_time()
-    
+        
     def stop_timer(self):
+        self._current_time = self._controller._format_time(self._hours, self._minutes, self._seconds)
         self._timer_on = False
         self._time_label.config(text=self._current_time)
         
+    def notified_update(self):
+        self.after_cancel(tk.after_id)
+        self._timer_on = False
+        slider_val = self._controller.get_slider_value()
+        self._hours = self._get_hours_from_int(slider_val)
+        self._minutes = self._get_minutes_from_int(slider_val)
+        self._seconds = 0
+        self._current_time = self._controller._format_time(self._hours, self._minutes, self._seconds)
+        self._time_label.config(text=self._current_time)
+        self.start_timer()

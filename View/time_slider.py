@@ -1,8 +1,15 @@
 import tkinter as tk
 
-class TimeSlider(tk.Frame):
+from View.observable import Observable
+from View.observer import Observer
+
+class TimeSlider(tk.Frame, Observable):
     def __init__(self, parent):
         super().__init__(master=parent)
+        
+        self._obeservers: list = []
+        
+        self.updating: bool = False
         
         self._seconds:int = 0
         self._minute:int = 0
@@ -19,13 +26,13 @@ class TimeSlider(tk.Frame):
         self._time_label.pack()
     
     def _update_values(self, a):
-        slider_val = self._slider.get()
-        self._hour = (slider_val // 60) % 24
-        self._minute = slider_val % 60
+        self.updating = True
+        self._hour = self.get_hours()
+        self._minute = self.get_minutes()
         self.formatted_time = self._format_time(self._hour, self._minute, 0)
         self._time_label.config(text=self.formatted_time)
-        # TODO NOTIFY OBSERVERS
-        #......................
+        self.notify_observers()
+        self.updating = False
         
     def _format_time(self, hour, minute, second) -> str:
         return str(hour).zfill(2) + ":" + str(minute).zfill(2) + ":" + str(second).zfill(2)
@@ -35,3 +42,23 @@ class TimeSlider(tk.Frame):
     
     def get_formatted_time(self) -> str:
         return self.formatted_time
+    
+    def is_updating(self) -> bool:
+        return self.updating
+    
+    def get_hours(self):
+        return (self._slider.get() // 60) % 24
+    
+    def get_minutes(self):
+        return self._slider.get() % 60
+    
+    def add_observer(self, observer: Observer):
+        self._obeservers.append(observer)
+        
+    
+    def remove_observer(self, observer: Observer) -> None:
+        self._obeservers.remove(observer)
+    
+    def notify_observers(self) -> None:
+        for ob in self._obeservers:
+            ob.notified_update()
