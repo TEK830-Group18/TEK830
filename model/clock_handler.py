@@ -1,13 +1,15 @@
 
 import tkinter as tk
 
+from View.observable import Observable
 from View.observer import Observer
 
-
-class ClockHandler(tk.Tk, Observer):
+class ClockHandler(tk.Tk, Observable):
     
     def __init__(self) -> None:
         self._timer_on = False
+        
+        self._obeservers = []
         
         self._hours = 0
         self._minutes = 0
@@ -42,7 +44,9 @@ class ClockHandler(tk.Tk, Observer):
                 self._seconds = 0
                 self._minutes = 0
                 self._hours = 0
+                
             self._seconds += 1
+            self.notify_observers()
             tk.after_id = self.after(1000,self.update_time)
             
     def start_timer(self, hours, minutes, seconds):
@@ -56,3 +60,12 @@ class ClockHandler(tk.Tk, Observer):
         self._timer_on = False
         self.after_cancel(tk.after_id)
         
+    def add_observer(self, observer: Observer):
+        self._obeservers.append(observer)
+        
+    def remove_observer(self, observer: Observer) -> None:
+        self._obeservers.remove(observer)
+    
+    def notify_observers(self) -> None:
+        for ob in self._obeservers:
+            ob.notified_update()
