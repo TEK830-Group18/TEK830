@@ -1,6 +1,6 @@
 import json
 from typing import List
-from events.lamp_event import LampEvent
+from model.events.lamp_event import LampEvent
 
 class Model():
     def __init__(self, data) -> None:
