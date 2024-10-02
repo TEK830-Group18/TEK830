@@ -1,6 +1,6 @@
 import tkinter as tk
 
-class AppFrame(tk.Tk):
+class appFrame(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('HÄRMAPA')

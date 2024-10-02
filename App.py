@@ -1,4 +1,4 @@
-from View.AppFrame import AppFrame
+from View.appFrame import appFrame
 from model.model import Model
 import threading
 
@@ -7,7 +7,7 @@ def model():
     model.mainloop()
 
 def view():
-    app = AppFrame()
+    app = appFrame()
     app.mainloop()
 
 if __name__ == "__main__":
