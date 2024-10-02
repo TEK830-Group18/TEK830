@@ -1,11 +1,16 @@
 import tkinter as tk
 import time
 
+from View.time_slider import TimeSlider
+
 class TimeWidget(tk.Frame):
-    def __init__(self, parent, current_time):
+    def __init__(self, parent, controller : TimeSlider):
         super().__init__(master=parent)
+        
+        self._controller = controller
+        
         self._timer_on: bool = False   
-        self._current_time = current_time
+        self._current_time = controller.get_formatted_time()
 
         # Configure row and column
         self.rowconfigure(0, weight=1)
@@ -32,7 +37,7 @@ class TimeWidget(tk.Frame):
         
     def start_timer(self):
         self._timer_on = True
-        self.update_time()
+        # self.update_time()
     
     def stop_timer(self):
         self._timer_on = False

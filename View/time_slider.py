@@ -32,3 +32,6 @@ class TimeSlider(tk.Frame):
     
     def get_slider_value(self) -> int:
         return self._slider.get()
+    
+    def get_formatted_time(self) -> str:
+        return self.formatted_time

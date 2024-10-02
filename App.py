@@ -12,11 +12,14 @@ def model():
 
 def view():
     app = AppFrame()
-    time_widget = TimeWidget(app, time.strftime('%H:%M:%S'))
+    
+    slider = TimeSlider(app)
+    
+    time_widget = TimeWidget(app, slider)
     # Starts the clock
     time_widget.start_timer()
     apt = Apt(app)
-    slider = TimeSlider(app)
+    
     # TODO probably need to override this mainloop method as it blocks any following code.
     app.mainloop()
 
