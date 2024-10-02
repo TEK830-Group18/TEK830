@@ -9,7 +9,9 @@ class ClockWidget(tk.Frame, Observer):
         
         self._controller = controller
         
-        self._timer_on: bool = False   
+        self._timer_on: bool = False  
+        
+        # Set current time as starting value on the controller, formatted 
         self._current_time = controller.get_formatted_time()
         
         self._hours = 0
