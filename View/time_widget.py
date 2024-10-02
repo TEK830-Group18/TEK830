@@ -44,7 +44,7 @@ class TimeWidget(tk.Frame, Observer):
                 self._hours = 0
             self._seconds += 1
         
-            self._current_time = self._controller._format_time(self._hours, self._minutes, self._seconds)
+            self._current_time = self._controller.format_time(self._hours, self._minutes, self._seconds)
             self._time_label.config(text=self._current_time)
             tk.after_id = self.after(1000,self.update_time)
     
@@ -64,7 +64,7 @@ class TimeWidget(tk.Frame, Observer):
         self.update_time()
         
     def stop_timer(self):
-        self._current_time = self._controller._format_time(self._hours, self._minutes, self._seconds)
+        self._current_time = self._controller.format_time(self._hours, self._minutes, self._seconds)
         self._timer_on = False
         self._time_label.config(text=self._current_time)
         
@@ -72,9 +72,11 @@ class TimeWidget(tk.Frame, Observer):
         self.after_cancel(tk.after_id)
         self._timer_on = False
         slider_val = self._controller.get_slider_value()
+        
         self._hours = self._get_hours_from_int(slider_val)
         self._minutes = self._get_minutes_from_int(slider_val)
         self._seconds = 0
-        self._current_time = self._controller._format_time(self._hours, self._minutes, self._seconds)
+        
+        self._current_time = self._controller.format_time(self._hours, self._minutes, self._seconds)
         self._time_label.config(text=self._current_time)
         self.start_timer()

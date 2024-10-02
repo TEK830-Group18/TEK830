@@ -14,7 +14,7 @@ class TimeSlider(tk.Frame, Observable):
         self._seconds:int = 0
         self._minute:int = 0
         self._hour:int = 0
-        self.formatted_time = self._format_time(self._hour, self._minute, self._seconds)
+        self.formatted_time = self.format_time(self._hour, self._minute, self._seconds)
         
         # init slider
         self._slider = tk.Scale(parent, from_=0, to=1440, orient='horizontal', length=500)
@@ -29,12 +29,12 @@ class TimeSlider(tk.Frame, Observable):
         self.updating = True
         self._hour = self.get_hours()
         self._minute = self.get_minutes()
-        self.formatted_time = self._format_time(self._hour, self._minute, 0)
+        self.formatted_time = self.format_time(self._hour, self._minute, 0)
         self._time_label.config(text=self.formatted_time)
         self.notify_observers()
         self.updating = False
         
-    def _format_time(self, hour, minute, second) -> str:
+    def format_time(self, hour, minute, second) -> str:
         return str(hour).zfill(2) + ":" + str(minute).zfill(2) + ":" + str(second).zfill(2)
     
     def get_slider_value(self) -> int:
