@@ -16,7 +16,8 @@ class Model():
             json_data = json.load(f)
 
             events : List[LampEvent]= []
-            for e in json_data:
+            json_events = json_data['lamp_usage']
+            for e in json_events:
                 event = LampEvent.from_json(e)
                 events.append(event)
         return events
