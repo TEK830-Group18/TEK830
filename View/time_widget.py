@@ -39,10 +39,10 @@ class TimeWidget(tk.Frame, Observer):
                 self._seconds = 0
                 self._minutes = 0
                 self._hours = 0
-            self._seconds += 1
         
             self._current_time = self._controller.format_time(self._hours, self._minutes, self._seconds)
             self._time_label.config(text=self._current_time)
+            self._seconds += 1
             tk.after_id = self.after(1000,self.update_time)
     
     def _get_hours_from_int(self, time:int):
