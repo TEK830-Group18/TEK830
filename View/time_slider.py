@@ -55,7 +55,6 @@ class TimeSlider(tk.Frame, Observable):
     def add_observer(self, observer: Observer):
         self._obeservers.append(observer)
         
-    
     def remove_observer(self, observer: Observer) -> None:
         self._obeservers.remove(observer)
     
