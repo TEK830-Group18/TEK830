@@ -1,7 +1,7 @@
 import tkinter as tk
 import time
 
-from View.time_slider import TimeSlider
+from time_slider import TimeSlider
 
 class TimeWidget(tk.Frame):
     def __init__(self, parent, controller : TimeSlider):
@@ -34,13 +34,33 @@ class TimeWidget(tk.Frame):
             self._current_time = time.strftime('%H:%M:%S')
             self._time_label.config(text=self._current_time)
             self.after(1000,self.update_time)
+            
+    def update_time(self):
+        if self._timer_on == True:
+            slider_val = self._controller.get_slider_value()
+            hours = (slider_val // 60) % 24
+            minutes = slider_val % 60
+            seconds = 0
+            while self._timer_on == True:
+                seconds += 1
+                if(seconds >= 60):
+                    seconds = 0
+                    minutes += 1
+                if(minutes >= 60):
+                    seconds = 0
+                    minutes = 0
+                    hours += 1
+                if(hours >= 24):
+                    seconds = 0
+                    minutes = 0
+                    hours = 0
+                time.sleep(1)
         
     def start_timer(self):
         self._timer_on = True
-        # self.update_time()
+        self.update_time()
     
     def stop_timer(self):
         self._timer_on = False
-        self._current_time = time.strftime('%H:%M:%S')
         self._time_label.config(text=self._current_time)
         

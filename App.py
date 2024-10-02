@@ -1,10 +1,10 @@
-import time
 from View.AppFrame import AppFrame
-from View.time_slider import TimeSlider
 from View.time_widget import TimeWidget
 from View.AptLayout import AptLayout as Apt
+from View.time_slider import TimeSlider
 from model.model import Model
 import threading
+
 
 def model():
     model = Model()
