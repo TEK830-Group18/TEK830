@@ -4,7 +4,7 @@ import tkinter as tk
 from View.observer import Observer
 
 
-class ClockHandler(Observer):
+class ClockHandler(tk.Tk, Observer):
     
     def __init__(self) -> None:
         self._timer_on = False
@@ -12,9 +12,13 @@ class ClockHandler(Observer):
         self._hours = 0
         self._minutes = 0
         self._seconds = 0
+        self.formatted_time = self.format_time(self._hour, self._minute, self._second)
     
     def format_time(self, hour, minute, second) -> str:
         return str(hour).zfill(2) + ":" + str(minute).zfill(2) + ":" + str(second).zfill(2)
+    
+    def get_formatted_time(self) -> str:
+        return self.formatted_time
     
     def get_hours(self):
         return self._hours
@@ -40,3 +44,15 @@ class ClockHandler(Observer):
                 self._hours = 0
             self._seconds += 1
             tk.after_id = self.after(1000,self.update_time)
+            
+    def start_timer(self, hours, minutes, seconds):
+        self._hours = hours
+        self._minutes = seconds
+        self._seconds = 0
+        self._timer_on = True
+        self.update_time()
+        
+    def stop_timer(self):
+        self._timer_on = False
+        self.after_cancel(tk.after_id)
+        

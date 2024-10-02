@@ -25,9 +25,6 @@ class TimeWidget(tk.Frame, Observer):
         self._time_label.grid(row=0, column=0, padx=10, pady=20)  # Using grid to place the label
 
         self.pack(pady=20)
-
-    def set_time(self, new_time):
-        self._current_time = new_time
             
     def update_time(self):
         if self._timer_on == True:
