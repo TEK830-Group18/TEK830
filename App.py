@@ -6,7 +6,7 @@ from model.model import Model
 import threading
 
 def model():
-    model = Model()
+    model = Model("tools/mock_user_data.json")
     model.mainloop()
 
 def view():
