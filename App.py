@@ -1,9 +1,10 @@
-import time
+from View.time_slider import TimeSlider
 from View.AppFrame import AppFrame
-from View.time_widget import TimeWidget
+from View.clock_widget import ClockWidget
 from View.AptLayout import AptLayout as Apt
 from model.model import Model
 import threading
+
 
 def model():
     model = Model("tools/mock_user_data.json")
@@ -11,10 +12,15 @@ def model():
 
 def view():
     app = AppFrame()
-    time_widget = TimeWidget(app, time.strftime('%H:%M:%S'))
+    
+    slider = TimeSlider(app)
+    
+    clock_widget = ClockWidget(app, slider)
+    slider.add_observer(clock_widget)
     # Starts the clock
-    time_widget.start_timer()
+    clock_widget.start_timer()
     apt = Apt(app)
+    
     # TODO probably need to override this mainloop method as it blocks any following code.
     app.mainloop()
 
