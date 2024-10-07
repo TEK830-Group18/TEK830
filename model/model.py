@@ -1,7 +1,7 @@
 import json
 from typing import List
 from model.events.lamp_event import LampEvent
-from model.scheduler import *
+from model.scheduler import Scheduler, Schedule
 
 class Model():
     def __init__(self, data: str, scheduler: Scheduler) -> None:
