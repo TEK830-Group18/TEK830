@@ -3,11 +3,12 @@ from View.AppFrame import AppFrame
 from View.clock_widget import ClockWidget
 from View.AptLayout import AptLayout as Apt
 from model.model import Model
+from model.scheduler import Scheduler, RandomScheduler
 import threading
 
 
 def model():
-    model = Model("tools/mock_user_data.json")
+    model = Model("tools/mock_user_data.json", RandomScheduler())
     model.mainloop()
 
 def view():
