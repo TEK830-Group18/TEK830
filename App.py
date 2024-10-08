@@ -10,6 +10,8 @@ from model.model import Model
 from model.algorithm.random_malg import RandomMAlg
 from model.algorithm.abstract_mimicking_algorithm import Schedule
 from model.demo_model import DemoModel
+from model.nn_model.nn_scheduler import NNScheduler
+from model.scheduler import Scheduler, RandomScheduler
 import threading
 
 from model.timer import Timer
