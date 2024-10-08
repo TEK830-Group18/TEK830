@@ -16,7 +16,7 @@ class Scheduler(ABC):
         pass
 
     @abstractmethod
-    def createSchedule(self, user_actions: List[LampEvent]) -> Schedule:
+    def create_schedule(self, user_actions: List[LampEvent]) -> Schedule:
         pass
 
 
@@ -27,7 +27,7 @@ class RandomScheduler(Scheduler):
     def __init__(self) -> None:
         super().__init__()
 
-    def createSchedule(self, user_actions: List[LampEvent]) -> Schedule:
+    def create_schedule(self, user_actions: List[LampEvent]) -> Schedule:
         grouped_events = self.group_events_by_period(user_actions)
         average_times = self.calculate_average_times(grouped_events)
         random_schedule = self.create_random_schedule(grouped_events, average_times)
