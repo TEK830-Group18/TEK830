@@ -8,13 +8,13 @@ class AbstractTimerService(ABC):
         pass
 
     @abstractmethod
-    def setTime(self, time: datetime) -> None:
+    def set_time(self, time: datetime) -> None:
         pass
 
     @abstractmethod
-    def addLightService(self, lightService: AbstractLightService) -> None:
+    def add_light_service(self, lightService: AbstractLightService) -> None:
         pass
 
     @abstractmethod
-    def publishEvent(self, event: LampEvent) -> None:
+    def publish_event(self, event: LampEvent) -> None:
         pass

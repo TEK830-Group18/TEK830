@@ -6,5 +6,5 @@ class AbstractLightService(ABC):
         pass
 
     @abstractmethod
-    def handleEvent(self, event: LampEvent) -> None:
+    def handle_event(self, event: LampEvent) -> None:
         pass
