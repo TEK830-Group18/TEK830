@@ -19,8 +19,7 @@ class ClockWidget(tk.Frame, Observer):
         self._seconds = 0
 
         # Configure row and column
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1)
+        self.pack(side="bottom")
 
         # Create and pack the label
         self._time_label = tk.Label(self, text=f"{self._current_time}", font=("Helvetica", 40), fg="white")
