@@ -12,15 +12,12 @@ class MoreThanNotScheduler(Scheduler):
         pass
 
     def createSchedule(self, user_actions: List[LampEvent]) -> Schedule:
-        minutes = self.create_minute_list(user_actions)
-
-        print(minutes)
-
-        events = self.create_event_list(minutes)
+        minutes: List[Dict[str, int]] = self.create_minute_list(user_actions)
+        events: List[LampEvent] = self.create_event_list(minutes)
         
         return Schedule(events)
 
-    def create_minute_list(self, user_actions):
+    def create_minute_list(self, user_actions) -> List[Dict[str, int]]:
         """Creates a list of dictionaries, each representing a minute of the day, with the number of times each lamp was on during that minute in each day."""
         minutes: List[Dict[str, int]] = [{} for _ in range(1440)]
         active: List[str] = []
@@ -37,10 +34,10 @@ class MoreThanNotScheduler(Scheduler):
                 minute[lamp] = minute.get(lamp, 0) + 1
         return minutes
 
-    def create_event_list(self, minutes):
+    def create_event_list(self, minutes) -> List[LampEvent]:
         """Creates a list of events based on if a lamp was on more often than off at a given minute."""
-        count_threshold = self.calculate_count_threshold(minutes)
-        active = []
+        count_threshold: int = self.calculate_count_threshold(minutes)
+        active: List[str] = []
         events: List[LampEvent] = []
         for i, minute in enumerate(minutes):
             for lamp, count in minute.items():
@@ -61,16 +58,16 @@ class MoreThanNotScheduler(Scheduler):
                     active.remove(lamp)
         return events
 
-    def calculate_count_threshold(self, minutes):
+    def calculate_count_threshold(self, minutes) -> int:
         """Calculates the threshold for the number of times a lamp must be on in a minute for it to be scheduled to be on. The threshold is half the maximum number of times a lamp was on in a minute."""
-        counts = []
+        counts: List[int] = []
         for minute in minutes:
             for lamp, count in minute.items():
                 counts.append(count)
         count_threshold = max(counts) // 2
         return count_threshold
 
-    def create_lamp_event(self, i, lamp, state):
+    def create_lamp_event(self, i, lamp, state) -> LampEvent:
         return LampEvent(
                         timestamp=datetime.combine(datetime.today(), time(i // 60, i % 60)),
                         lamp=lamp,
