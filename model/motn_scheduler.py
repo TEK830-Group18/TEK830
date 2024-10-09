@@ -35,16 +35,17 @@ class MoreThanNotScheduler(Scheduler):
         return minutes
 
     def create_event_list(self, minutes):
+        count_threshold = self.calculate_count_threshold(minutes)
         active = []
         events: List[LampEvent] = []
         for i, minute in enumerate(minutes):
             for lamp, count in minute.items():
-                if count > 2 and lamp not in active:
+                if count > count_threshold and lamp not in active:
                     event = self.create_lamp_event(i, lamp, LampAction.ON)
                     events.append(event)
                     active.append(lamp)
 
-                elif (count <= 2 and lamp in active):
+                elif (count <= count_threshold and lamp in active):
                     event = self.create_lamp_event(i, lamp, LampAction.OFF)
                     events.append(event)
                     active.remove(lamp)
@@ -55,6 +56,14 @@ class MoreThanNotScheduler(Scheduler):
                     events.append(event)
                     active.remove(lamp)
         return events
+
+    def calculate_count_threshold(self, minutes):
+        counts = []
+        for minute in minutes:
+            for lamp, count in minute.items():
+                counts.append(count)
+        count_threshold = max(counts) // 2
+        return count_threshold
 
     def create_lamp_event(self, i, lamp, state):
         return LampEvent(
