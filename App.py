@@ -3,29 +3,35 @@ from View.AppFrame import AppFrame
 from View.clock_widget import ClockWidget
 from View.AptLayout import AptLayout as Apt
 from model.model import Model
-from model.scheduler import Scheduler, RandomScheduler
+from model.scheduler import RandomScheduler
 import threading
 
+class Application:
+    def __init__(self):
+        self.model = Model("tools/mock_user_data.json", RandomScheduler())
+        self.app = AppFrame()
+        self.setup_ui()
 
-def model():
-    model = Model("tools/mock_user_data.json", RandomScheduler())
-    model.mainloop()
+    def setup_ui(self):
+        # Slider and clock widget
+        slider = TimeSlider(self.app)
+        clock_widget = ClockWidget(self.app, slider)
+        slider.add_observer(clock_widget)
+        clock_widget.start_timer()
+        
 
-def view():
-    app = AppFrame()
-    
-    slider = TimeSlider(app)
-    
-    clock_widget = ClockWidget(app, slider)
-    slider.add_observer(clock_widget)
-    # Starts the clock
-    clock_widget.start_timer()
-    apt = Apt(app)
-    
-    # TODO probably need to override this mainloop method as it blocks any following code.
-    app.mainloop()
+        # Apt layout
+        apt = Apt(self.app)
+
+        # Main loop
+        self.app.mainloop()
+
+    def run_model(self):
+        self.model.mainloop()
 
 
 if __name__ == "__main__":
-    model_thread: threading.Thread = threading.Thread(target=model())
-    view_thread: threading.Thread = threading.Thread(target=view())
+    application = Application()
+
+    model_thread: threading.Thread = threading.Thread(application.run_model())
+    model_thread.start()
