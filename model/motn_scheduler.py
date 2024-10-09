@@ -12,7 +12,7 @@ class MoreThanNotScheduler(Scheduler):
         pass
 
     def createSchedule(self, user_actions: List[LampEvent]) -> Schedule:
-        minutes = self.create_state_list(user_actions)
+        minutes = self.create_minute_list(user_actions)
 
         print(minutes)
 
@@ -20,21 +20,25 @@ class MoreThanNotScheduler(Scheduler):
         
         return Schedule(events)
 
-    def create_state_list(self, user_actions):
+    def create_minute_list(self, user_actions):
+        """Creates a list of dictionaries, each representing a minute of the day, with the number of times each lamp was on during that minute in each day."""
         minutes: List[Dict[str, int]] = [{} for _ in range(1440)]
         active: List[str] = []
         for i, minute in enumerate(minutes):
             for action in user_actions:
+                # If the action happened at this minute
                 if action.timestamp.hour * 60 + action.timestamp.minute == i:
                     if action.action == LampAction.ON:
                         active.append(action.lamp)
                     else:
                         active.remove(action.lamp)
+            # Increment the count of each lamp that was on during this minute
             for lamp in active:
                 minute[lamp] = minute.get(lamp, 0) + 1
         return minutes
 
     def create_event_list(self, minutes):
+        """Creates a list of events based on if a lamp was on more often than off at a given minute."""
         count_threshold = self.calculate_count_threshold(minutes)
         active = []
         events: List[LampEvent] = []
@@ -58,6 +62,7 @@ class MoreThanNotScheduler(Scheduler):
         return events
 
     def calculate_count_threshold(self, minutes):
+        """Calculates the threshold for the number of times a lamp must be on in a minute for it to be scheduled to be on. The threshold is half the maximum number of times a lamp was on in a minute."""
         counts = []
         for minute in minutes:
             for lamp, count in minute.items():
