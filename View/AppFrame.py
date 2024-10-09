@@ -6,4 +6,4 @@ class AppFrame(tk.Tk):
         self.title('HÄRMAPA')
         self.geometry('1280x720')
         self.configure(bg = "#0057AD")
-        
+
