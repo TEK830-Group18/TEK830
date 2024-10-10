@@ -22,8 +22,8 @@ class ClockWidget(tk.Frame, Observer):
         self.grid(row=1, column=1, columnspan=2)
         
         # Create and pack the label
-        self._time_label = tk.Label(self, text=f"{self._current_time}", font=("Helvetica", 40), fg="white")
-        self._time_label.grid(row=0, column=0, padx=10, pady=20)  # Using grid to place the label
+        self._time_label = tk.Label(self, text=f"{self._current_time}", font=("Helvetica", 30), fg="white")
+        self._time_label.grid(row=0, column=0, padx=10)
         self._time_label.configure(bg="#0057AD")
         
         self.configure(bg="#0057AD")

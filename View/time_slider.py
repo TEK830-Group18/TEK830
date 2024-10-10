@@ -18,7 +18,7 @@ class TimeSlider(tk.Frame, Observable):
         self.configure(bg="#0057AD")
         
         # init slider
-        self._slider = tk.Scale(parent, from_=0, to=1440, orient='horizontal', length=500, showvalue=0)
+        self._slider = tk.Scale(parent, from_=0, to=1440, orient='horizontal', length=600, showvalue=0)
         self._slider.config(command=self._update_values)
         self._slider.grid(row=3, column=1, columnspan=2)        
     

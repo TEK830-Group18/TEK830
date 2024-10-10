@@ -1,8 +1,6 @@
 import tkinter as tk
 
 class AppFrame(tk.Tk):
-    WIDTH = 1280
-    HEIGHT = 720
     IKEA_BLUE = "#0057AD"
     IKEA_YELLOW = "#FBDA0C"
    
@@ -13,15 +11,10 @@ class AppFrame(tk.Tk):
         self.title('HÄRMAPA')
         self.configure(bg = AppFrame.IKEA_BLUE)
         
-        # for centering screen
         self._screen_width = self.winfo_screenwidth()
         self._screen_height = self.winfo_screenheight()
         
-        # for centering screen
-        self._x = int((self._screen_width/2) - (AppFrame.WIDTH/2))
-        self._y = int((self._screen_height/2) - (AppFrame.HEIGHT/2))
-        
-        self.geometry(f'{AppFrame.WIDTH}x{AppFrame.HEIGHT}+{self._x}+{self._y}')
+        self.geometry(f'{self._screen_width}x{self._screen_height}')
         
         # for centering widgets
         self.columnconfigure(0, weight=1)
