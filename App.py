@@ -19,9 +19,11 @@ class Application:
         slider.add_observer(clock_widget)
         clock_widget.start_timer()
         
+        # Schedule
+        schedule = self.model.schedule
 
         # Apt layout
-        apt = Apt(self.app, slider)
+        apt = Apt(self.app, slider, schedule)
         slider.add_observer(apt)
 
 
