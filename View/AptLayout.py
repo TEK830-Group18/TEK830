@@ -1,10 +1,15 @@
 import tkinter as tk
 from PIL import Image, ImageTk, ImageEnhance
+from View.observer import Observer
+from View.time_slider import TimeSlider
 import os
 
 
-class AptLayout:
-    def __init__(self, parent):
+class AptLayout(Observer):
+    def __init__(self, parent, controller : TimeSlider):
+        super().__init__()
+
+        self._controller = controller
 
         # Darkness intensity
         self.darknessIntensity = 0.4
@@ -81,7 +86,15 @@ class AptLayout:
         self.aptLayoutLabel.configure(image = self.aptLayout)
         self.aptLayoutLabel.image_names = self.aptLayout
 
-    # Method to put the picture on the main frame
+    # Method to update the observer
+    def notified_update(self):
+        self.current_hours = self._controller.get_hours()
+        self.current_minutes = self._controller.get_minutes()
+        self.current_seconds = 0
+
+        print(f"Updated time in AptLayout: {self.current_hours:02}:{self.current_minutes:02}:{self.current_seconds:02}")
+
+        # Method to put the picture on the main frame
     def display_layout(self, parent):
         self.aptLayout = ImageTk.PhotoImage(self.aptLayoutPic)
         self.aptLayoutLabel = tk.Label(parent, image = self.aptLayout)

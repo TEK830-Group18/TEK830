@@ -21,7 +21,9 @@ class Application:
         
 
         # Apt layout
-        apt = Apt(self.app)
+        apt = Apt(self.app, slider)
+        slider.add_observer(apt)
+
 
         # Main loop
         self.app.mainloop()
