@@ -9,7 +9,7 @@ import threading
 
 
 def model():
-    model = Model("tools/lamp_usage_14_days.json", NNScheduler())
+    model = Model("tools/mock_user_data.json", NNScheduler())
     model.mainloop()
 
 def view():
