@@ -28,6 +28,7 @@ class Application:
 
 
         # Main loop
+        
         self.app.mainloop()
 
     def run_model(self):

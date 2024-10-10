@@ -75,11 +75,14 @@ class AptLayout(Observer):
             print(f"Room {room_name} not found.")
     
     # Method to check if the current time is within the tolerance
-    def time_within_tolerance(self, current_time : datetime, event_time : datetime, tolerance_seconds = 59):
+    def time_within_tolerance(self, current_time : time, event_time : time, tolerance_minutes = 1):
+
         today = datetime.today()
-        current_datetime = datetime.combine(today, current_time)
+        current_datetime = datetime.combine(today, current_time)    
         event_datetime = datetime.combine(today, event_time)
-        return abs((current_datetime - event_datetime).total_seconds()) <= tolerance_seconds
+        
+        time_diff = abs((current_datetime - event_datetime).total_seconds() / 60)
+        return time_diff <= tolerance_minutes
 
     # Method to update the observer
     def notified_update(self):
@@ -92,11 +95,14 @@ class AptLayout(Observer):
 
         for event in self.schedule.events:
             event_time = event.timestamp.time()
-            print(f"Event time: {event_time}, Lamp: {event.lamp}, Action: {event.action}")
+            # print(f"Event time: {event_time}, Lamp: {event.lamp}, Action: {event.action}")
+            print(f"Comparing current time {current_time} with event time {event_time}")
 
             if self.time_within_tolerance(current_time, event_time):
                 self.toggle_rooms_state(event.lamp, event.action)
                 print(f"Toggling {event.lamp} at {current_time} with action {event.action}")
+
+        
 
     # Method to update display
     def update_display(self):
