@@ -18,7 +18,7 @@ class NNScheduler(Scheduler):
     def __init__(self):
         super().__init__()
 
-    def create_schedule(self, user_actions: List[LampEvent]) -> Schedule:
+    def createSchedule(self, user_actions: List[LampEvent]) -> Schedule:
         # Prepare the dataset for training
         print("Preparing data...")
         dataset = LampEventDataset(user_actions)
@@ -117,5 +117,4 @@ class NNScheduler(Scheduler):
                         schedule_events.append(LampEvent(lamp=lamp_id, timestamp=timestamp, action=action))
                         previous_action = action
 
-        print(len(schedule_events))
         return Schedule(events=schedule_events)
