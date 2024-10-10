@@ -20,8 +20,7 @@ class TimeSlider(tk.Frame, Observable):
         # init slider
         self._slider = tk.Scale(parent, from_=0, to=1440, orient='horizontal', length=500, showvalue=0)
         self._slider.config(command=self._update_values)
-        self._slider.pack(side="bottom", pady=50)
-        
+        self._slider.grid(row=3, column=1, columnspan=2)        
     
     def _update_values(self, a):
         """_summary_
