@@ -26,9 +26,11 @@ class ScheduleList(ctk.CTkScrollableFrame):
         """
         Fills the frame with entries from a list of scheduled activites.
         """
+        
+        #example code for filling the list
         nr_of_elements = 10
         for i in range(0, nr_of_elements):
-            e = ScheduleListElement(self, str(i))
+            e = ScheduleListElement(self, i)
             e.grid(row=i, column=0,pady=5)
 
     
