@@ -18,7 +18,7 @@ class TimeSlider(ctk.CTkFrame, Observable):
         self.configure(fg_color="#0057AD")
         
         # init slider
-        self._slider = ctk.CTkSlider(parent, from_=0, to=1440, orientation='horizontal', width=600, number_of_steps=1440)
+        self._slider = ctk.CTkSlider(parent, from_=0, to=1440, orientation='horizontal', width=600, number_of_steps=1440,border_color="light gray", height=25)
         self._slider.configure(command=self._update_values)
         self._slider.set(0)
         self._slider.grid(row=3, column=1, columnspan=2)        
