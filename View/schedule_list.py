@@ -17,21 +17,22 @@ class ScheduleList(ctk.CTkScrollableFrame):
                        label_fg_color = "#D3D3D3")
         
         self.grid(row=0, column=2, sticky="W",padx=20)
-        
-        self.elem = ScheduleListElement(self)
-        self.elem.grid(row=0, column=0,pady=5)
-        self.elem2 = ScheduleListElement(self)
-        self.elem2.grid(row=1, column=0,pady=5)
+
+        self._build_list()
 
         
-    #TODO Implement this
-    def _insert_schedule(self):
+    #TODO This method should probably get all events and generate ScheduleListElements to put in the list.
+    def _build_list(self):
         """
-        Fills the listbox with entries from a list of scheduled activites.
+        Fills the frame with entries from a list of scheduled activites.
         """
-        pass
+        nr_of_elements = 10
+        for i in range(0, nr_of_elements):
+            e = ScheduleListElement(self, str(i))
+            e.grid(row=i, column=0,pady=5)
+
     
-    #TODO
+    #TODO maybe this should trigger when schedule in model updates? This class could observe the model?
     def update_list(self):
         """Should update the list in the list box with entries from a schedule
         """
