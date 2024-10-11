@@ -1,5 +1,7 @@
 import customtkinter as ctk
 
+from View.schedule_list_element import ScheduleListElement
+
 class ScheduleList(ctk.CTkScrollableFrame):
     def __init__(self, master, **kwargs):
         self._width = 150
@@ -15,22 +17,12 @@ class ScheduleList(ctk.CTkScrollableFrame):
                        label_fg_color = "#D3D3D3")
         
         self.grid(row=0, column=2, sticky="W",padx=20)
+        
+        self.elem = ScheduleListElement(self)
+        self.elem.grid(row=0, column=0,pady=5)
+        self.elem2 = ScheduleListElement(self)
+        self.elem2.grid(row=1, column=0,pady=5)
 
-    
-    
-    
-    # def __init__(self, parent):
-    #     super().__init__(master=parent)
-        
-    #     self._lbl = tk.Label(self,text="SCHEDULE", font=("Helvetica",10,"bold"))
-    #     self._lbl.pack()
-        
-    #     self._list_box = tk.Listbox(self, height=15)
-    #     self._list_box.pack()
-        
-    #     self._insert_schedule()
-        
-    #     self.grid(row=0, column=2, sticky="W",padx=20)
         
     #TODO Implement this
     def _insert_schedule(self):
