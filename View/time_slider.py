@@ -1,10 +1,9 @@
-import tkinter as tk
 import customtkinter as ctk
 
 from View.observable import Observable
 from View.observer import Observer
 
-class TimeSlider(tk.Frame, Observable):
+class TimeSlider(ctk.CTkFrame, Observable):
     def __init__(self, parent):
         super().__init__(master=parent)
         
@@ -16,7 +15,7 @@ class TimeSlider(tk.Frame, Observable):
         self._minute:int = 0
         self._hour:int = 0
         self.formatted_time = self.format_time(self._hour, self._minute, self._seconds)
-        self.configure(bg="#0057AD")
+        self.configure(fg_color="#0057AD")
         
         # init slider
         self._slider = ctk.CTkSlider(parent, from_=0, to=1440, orientation='horizontal', width=600, number_of_steps=1440)
