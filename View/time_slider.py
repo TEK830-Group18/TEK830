@@ -1,4 +1,5 @@
 import tkinter as tk
+import customtkinter as ctk
 
 from View.observable import Observable
 from View.observer import Observer
@@ -18,8 +19,9 @@ class TimeSlider(tk.Frame, Observable):
         self.configure(bg="#0057AD")
         
         # init slider
-        self._slider = tk.Scale(parent, from_=0, to=1440, orient='horizontal', length=600, showvalue=0)
-        self._slider.config(command=self._update_values)
+        self._slider = ctk.CTkSlider(parent, from_=0, to=1440, orientation='horizontal', width=600, number_of_steps=1440)
+        self._slider.configure(command=self._update_values)
+        self._slider.set(0)
         self._slider.grid(row=3, column=1, columnspan=2)        
     
     def _update_values(self, a):
@@ -47,7 +49,7 @@ class TimeSlider(tk.Frame, Observable):
         return str(hour).zfill(2) + ":" + str(minute).zfill(2) + ":" + str(second).zfill(2)
     
     def get_slider_value(self) -> int:
-        return self._slider.get()
+        return self._slider.get().as_integer_ratio()[0]
     
     def get_formatted_time(self) -> str:
         return self.formatted_time
