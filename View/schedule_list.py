@@ -11,10 +11,11 @@ class ScheduleList(ctk.CTkScrollableFrame):
         self.configure(height=self._height, 
                        width=self._width, 
                        fg_color = "white", 
-                       label_text = "SCHEDULE", 
+                       label_text = "Schedule", 
                        label_font = ("Helvetica",16), 
                        label_text_color = "black",
                        label_fg_color = "#D3D3D3",
+                       scrollbar_fg_color = "#ebe8e8"
                        )
         
         self.grid(row=1, column=2, sticky="W",padx=20)
