@@ -17,10 +17,10 @@ class ScheduleListElement(ctk.CTkFrame):
                                  height=30,
                                  corner_radius=10,
                                  fg_color="#4c4c4c",
-                                 font=("Helvetica", 12)
+                                 font=("Helvetica", 12),
                                  )
         
-        self._lbl.grid(row=0,column=0,padx=2)
+        self._lbl.grid(row=0, column=0, padx=2)
  
         self.configure(fg_color = "white")
         

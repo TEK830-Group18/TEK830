@@ -10,7 +10,7 @@ class AppFrame(ctk.CTk):
         # Need the image to be kept as instance variable, otherwise garbage collection removes it.
         self._image = Image.open("Images\HÄRMAPA.png")
         image_width, image_height = self._image.size
-        self._harmapa_image = ctk.CTkImage(self._image, size=(image_width, image_height))
+        self._harmapa_image = ctk.CTkImage(self._image, size=(image_width-20, image_height-10))
         self.title('HÄRMAPA')
         self.configure(fg_color = AppFrame.IKEA_BLUE)
         
@@ -35,5 +35,5 @@ class AppFrame(ctk.CTk):
         self.columnconfigure(3, weight=1)
         
         self._title_lbl = ctk.CTkLabel(self, image=self._harmapa_image, fg_color=AppFrame.IKEA_BLUE, text="")
-        self._title_lbl.configure(width=image_width, height=image_height)
+        self._title_lbl.configure(width=image_width-20, height=image_height-10)
         self._title_lbl.place(x=0,y=0)
