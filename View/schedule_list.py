@@ -71,3 +71,4 @@ class ScheduleList(ctk.CTkFrame, Observer):
             self._title_lbl_text_var.set(self._activated_str)
         else:
             self._title_lbl_text_var.set(self._deactivated_str)
+        self.update_list()
