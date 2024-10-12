@@ -34,12 +34,8 @@ class AppFrame(ctk.CTk):
         self.columnconfigure(2, weight=1)
         self.columnconfigure(3, weight=1)
         
+        # for centering
         self.rowconfigure(0, weight=1)
-        # self.rowconfigure(1, weight=1)
-        # self.rowconfigure(2, weight=1)
-        # self.rowconfigure(3, weight=1)
-        # self.rowconfigure(4, weight=1)
-        # self.rowconfigure(5, weight=1)
         self.rowconfigure(6, weight=1)
         
         self._title_lbl = ctk.CTkLabel(self, image=self._harmapa_image, fg_color=AppFrame.IKEA_BLUE, text="")
