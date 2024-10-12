@@ -20,6 +20,7 @@ class ActivationButton(ctk.CTkFrame, Observable):
                                   command=self.toggle_modes, 
                                   width=300, 
                                   height=40,
+                                  hover_color="#757575"
                                   )
         self._btn.pack(pady=10)
         
