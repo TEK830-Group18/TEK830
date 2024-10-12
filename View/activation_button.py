@@ -26,7 +26,6 @@ class ActivationButton(ctk.CTkFrame, Observable):
         self.grid(row=5, column=1, columnspan=2)
         self.configure(fg_color="#0057AD")
         
-    #TODO not fully implemented
     def toggle_modes(self):
         """Method that triggers when button is pressed. Switches between HÄRMAPA schedule and regluar schedule
         """
