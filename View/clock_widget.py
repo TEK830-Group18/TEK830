@@ -19,7 +19,7 @@ class ClockWidget(ctk.CTkFrame, Observer):
         self._seconds = 0
 
         # Configure row and column
-        self.grid(row=1, column=1, columnspan=2)
+        self.grid(row=2, column=1, columnspan=2)
         
         # Create and pack the label
         self._time_label = ctk.CTkLabel(self, text=f"{self._current_time}", font=("Helvetica", 30), text_color="white")

@@ -17,7 +17,7 @@ class AppFrame(ctk.CTk):
         self.window_height = 720
         self.window_width = 1280
         
-        # Get the screen width and height
+        # For centering screen
         self.screen_width = self.winfo_screenwidth()
         self.screen_height = self.winfo_screenheight()
 
@@ -34,6 +34,14 @@ class AppFrame(ctk.CTk):
         self.columnconfigure(2, weight=1)
         self.columnconfigure(3, weight=1)
         
+        self.rowconfigure(0, weight=1)
+        # self.rowconfigure(1, weight=1)
+        # self.rowconfigure(2, weight=1)
+        # self.rowconfigure(3, weight=1)
+        # self.rowconfigure(4, weight=1)
+        # self.rowconfigure(5, weight=1)
+        self.rowconfigure(6, weight=1)
+        
         self._title_lbl = ctk.CTkLabel(self, image=self._harmapa_image, fg_color=AppFrame.IKEA_BLUE, text="")
         self._title_lbl.configure(width=image_width-20, height=image_height-10)
-        self._title_lbl.place(x=0,y=0)
+        self._title_lbl.place(x=20,y=10)

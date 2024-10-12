@@ -18,7 +18,7 @@ class ActivationButton(ctk.CTkFrame):
                                   )
         self._btn.pack(pady=10)
         
-        self.grid(row=4, column=1, columnspan=2)
+        self.grid(row=5, column=1, columnspan=2)
         self.configure(fg_color="#0057AD")
         
     def toggle_modes(self):

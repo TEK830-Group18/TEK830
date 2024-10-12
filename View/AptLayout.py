@@ -86,4 +86,4 @@ class AptLayout:
     def display_layout(self, parent):
         self.aptLayout = ImageTk.PhotoImage(self.aptLayoutPic)
         self.aptLayoutLabel = tk.Label(parent, image = self.aptLayout)
-        self.aptLayoutLabel.grid(row=0,column=1,sticky="E", padx=20, pady=50)
+        self.aptLayoutLabel.grid(row=1,column=1,sticky="E", padx=20, pady=50)
