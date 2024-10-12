@@ -10,7 +10,6 @@ class ScheduleListElement(ctk.CTkFrame):
     def __init__(self, master, text : str):
         super().__init__(master)
         
-        
         self._lbl = ctk.CTkLabel(self,
                                  text = text,
                                  width = 140,

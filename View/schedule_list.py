@@ -17,7 +17,7 @@ class ScheduleList(ctk.CTkFrame, Observer):
         
         self.configure(height=self._height, width=self._width, fg_color="#0057AD")
         
-        # create variable for frame title
+        # create variable text for frame title
         self._title_lbl_text_var : tk.StringVar = tk.StringVar()
         self._title_lbl_text_var.set(self._deactivated_str)
         
@@ -47,8 +47,7 @@ class ScheduleList(ctk.CTkFrame, Observer):
         self.grid(row=1, column=2, sticky="W",padx=20)
 
         self._build_list()
-
-        
+ 
     #TODO This method should probably get all events and generate ScheduleListElements to put in the list.
     def _build_list(self):
         """
@@ -61,8 +60,6 @@ class ScheduleList(ctk.CTkFrame, Observer):
             e = ScheduleListElement(self._list_frame, f"Room {i}, Event {i}")
             e.grid(row=i, column=0,pady=5)
         
-
-    
     #TODO maybe this should trigger when schedule in model updates? This class could observe the model?
     def update_list(self):
         """Should update the list in the list box with new entries from a schedule
