@@ -2,13 +2,14 @@ import customtkinter as ctk
 
 from View.schedule_list_element import ScheduleListElement
 
-class ScheduleList(ctk.CTkScrollableFrame):
+class ScheduleList(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
         self._width = 150
         self._height = 230
         super().__init__(master, **kwargs)
         
-        self.configure(height=self._height, 
+        self.configure(height=self._height, width=self._width,)
+        self._scrollable_frame = ctk.CTkScrollableFrame(self, height=self._height, 
                        width=self._width, 
                        fg_color = "white", 
                        label_text = "Schedule", 
@@ -17,6 +18,7 @@ class ScheduleList(ctk.CTkScrollableFrame):
                        label_fg_color = "#D3D3D3",
                        scrollbar_fg_color = "#ebe8e8"
                        )
+        self._scrollable_frame.pack()
         
         self.grid(row=1, column=2, sticky="W",padx=20)
 
@@ -30,9 +32,9 @@ class ScheduleList(ctk.CTkScrollableFrame):
         """
         
         #example code for filling the list
-        nr_of_elements = 100
+        nr_of_elements = 10
         for i in range(0, nr_of_elements):
-            e = ScheduleListElement(self, f"Room {i}, Event {i}")
+            e = ScheduleListElement(self._scrollable_frame, f"Room {i}, Event {i}")
             e.grid(row=i, column=0,pady=5)
 
     
