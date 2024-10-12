@@ -30,7 +30,10 @@ class ScheduleList(ctk.CTkFrame, Observer):
         self._title_lbl_frame.grid(row=0,column=0,sticky="nswe")
         
         # create title label
-        self._title_lbl = ctk.CTkLabel(self._title_lbl_frame, textvariable = self._title_lbl_text_var, text_color="black", font=("Helvetica",12))
+        self._title_lbl = ctk.CTkLabel(self._title_lbl_frame,
+                                       textvariable = self._title_lbl_text_var,
+                                       text_color="black",
+                                       font=("Helvetica",12, "bold"))
         self._title_lbl.pack()
         
         # Init scrollable frame, representing list

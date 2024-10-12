@@ -16,8 +16,9 @@ class ScheduleListElement(ctk.CTkFrame):
                                  width = 140,
                                  height=30,
                                  corner_radius=10,
-                                 fg_color="#4c4c4c",
+                                 fg_color="#ebe8e8",
                                  font=("Helvetica", 12),
+                                 text_color="black"
                                  )
         
         self._lbl.grid(row=0, column=0, padx=2)
