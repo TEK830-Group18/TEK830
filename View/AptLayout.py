@@ -3,7 +3,7 @@ from PIL import Image, ImageTk, ImageEnhance
 from View.observer import Observer
 from View.time_slider import TimeSlider
 from model.scheduler import Schedule
-from datetime import datetime, time
+from datetime import time
 from model.events.lamp_action import LampAction
 import os
 
