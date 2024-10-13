@@ -25,10 +25,8 @@ class Application:
         # Apt layout
         apt = Apt(self.app, slider, schedule)
         slider.add_observer(apt)
-
-
-        # Main loop
         
+        # Main loop
         self.app.mainloop()
 
     def run_model(self):
