@@ -4,6 +4,7 @@ from View.observer import Observer
 from View.time_slider import TimeSlider
 from model.scheduler import Schedule
 from datetime import datetime, time
+from model.events.lamp_action import LampAction
 import os
 
 
@@ -74,11 +75,11 @@ class AptLayout(Observer):
     # Method to toggle between darkness and light
     def toggle_rooms_state(self, room_name, action):
         if room_name in self.room_coordinates:
-            if action == "on":
+            if action == LampAction.ON:
                 if not self.room_state[room_name]:
                     self.room_state[room_name] = True
                     print(f"Turning on {room_name.capitalize()}")
-            elif action == "off":
+            elif action == LampAction.OFF:
                 if self.room_state[room_name]:
                     self.room_state[room_name] = False
                     print(f"Turning off {room_name.capitalize()}")
@@ -92,6 +93,23 @@ class AptLayout(Observer):
             self.update_display()
         else:
             print(f"Room {room_name} not found.")
+
+    
+    def check_events(self):
+        print(f"Current time: {self.current_hours:02}:{self.current_minutes:02}")
+
+        for event in self.schedule.events:
+            event_time = event.timestamp.time()
+            event_hour = event_time.hour
+            event_minute = event_time.minute
+
+            print(f"Checking event {event.lamp} at {event_hour:02}:{event_minute:02}")
+
+            if (self.current_hours == event_hour) and (self.current_minutes == event_minute):
+                self.toggle_rooms_state(event.lamp, event.action)
+                print(f"Toggling {event.lamp} at {self.current_hours:02}:{self.current_minutes:02} with action {event.action}")
+        
+        self.update_display()
     
     # Method to check if the current time is within the tolerance
     def time_within_tolerance(self, current_time : time, event_time : time, tolerance_minutes = 1):
@@ -113,17 +131,7 @@ class AptLayout(Observer):
 
         print(f"Update time in AptLayout: {self.current_hours:02}:{self.current_minutes:02}")
 
-        for event in self.schedule.events:
-            event_time = event.timestamp.time()
-            event_hour = event_time.hour
-            event_minute = event_time.minute
-
-            print(f"Comparing current time {self.current_hours:02}:{self.current_minutes:02} with event time {event_hour:02}:{event_minute:02}")
-
-            if (self.current_hours == event_hour) and (self.current_minutes == event_minute):
-                self.toggle_rooms_state(event.lamp, event.action)
-                print(f"Toggling {event.lamp} at {self.current_hours:02}:{self.current_minutes:02} with action {event.action}")
-                self.update_display()
+        self.check_events()
         
 
     # Method to update display

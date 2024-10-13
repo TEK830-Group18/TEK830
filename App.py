@@ -25,6 +25,8 @@ class Application:
         # Apt layout
         apt = Apt(self.app, slider, schedule)
         slider.add_observer(apt)
+        apt.toggle_rooms_state("bedroom", "on")
+        apt.toggle_rooms_state("bedroom", "off")
         
         # Main loop
         self.app.mainloop()
