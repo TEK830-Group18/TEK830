@@ -24,7 +24,7 @@ class TimeSlider(ctk.CTkFrame, Observable):
                                      orientation='horizontal',
                                      width=600,
                                      number_of_steps=1440,
-                                     height=25,
+                                     height=20,
                                      button_color="gray",
                                      button_hover_color="dark gray",
                                      progress_color="light gray"
