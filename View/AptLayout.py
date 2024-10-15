@@ -51,19 +51,12 @@ class AptLayout(Observer):
         }
 
         self.display_layout(parent)
-        self.update_initial_brightness()
         
-    # Method to adjust the brightness of the room
-    def adjust_room_brightness(self, coordinate, brightness):
-        room_image = self.original_image.crop(coordinate)
-        room_adjusted = ImageEnhance.Brightness(room_image).enhance(brightness)
-        self.modified_image.paste(room_adjusted, coordinate)
-
-    def apply_all_brightness(self, room_name):
-        if room_name in self.room_coordinates:
-            coordinate = self.room_coordinates[room_name]
-            brightness = self.BRIGHTNESSINTENSITY if self.room_state[room_name] else self.DARKNESSINTENSITY
-            self.adjust_room_brightness(coordinate, brightness)
+    # Method that make room dark
+    def darken_rooms(self, coordinate):
+        room_image = self.aptLayoutPic.crop(coordinate)
+        room_dark = ImageEnhance.Brightness(room_image).enhance(self.darknessIntensity)
+        self.aptLayoutPic.paste(room_dark, coordinate)
 
     # Method to make all the room dark initially
     def update_initial_brightness(self):
@@ -144,5 +137,4 @@ class AptLayout(Observer):
     def display_layout(self, parent):
         self.aptLayout = ImageTk.PhotoImage(self.modified_image)
         self.aptLayoutLabel = tk.Label(parent, image = self.aptLayout)
-        self.aptLayoutLabel.pack()
-        self.aptLayoutLabel.place(x = 20, y = 10)
+        self.aptLayoutLabel.grid(row=1,column=1,sticky="E", padx=20, pady=50)

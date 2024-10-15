@@ -1,9 +1,10 @@
-import tkinter as tk
+import customtkinter as ctk
 
+from View.colors import Colors
 from View.observable import Observable
 from View.observer import Observer
 
-class TimeSlider(tk.Frame, Observable):
+class TimeSlider(ctk.CTkFrame, Observable):
     def __init__(self, parent):
         super().__init__(master=parent)
         
@@ -15,12 +16,23 @@ class TimeSlider(tk.Frame, Observable):
         self._minute:int = 0
         self._hour:int = 0
         self.formatted_time = self.format_time(self._hour, self._minute, self._seconds)
+        self.configure(fg_color=Colors.IKEA_BLUE.value)
         
         # init slider
-        self._slider = tk.Scale(parent, from_=0, to=1440, orient='horizontal', length=500, showvalue=0)
-        self._slider.config(command=self._update_values)
-        self._slider.pack()
-        
+        self._slider = ctk.CTkSlider(parent,
+                                     from_=0,
+                                     to=1440,
+                                     orientation='horizontal',
+                                     width=600,
+                                     number_of_steps=1440,
+                                     height=20,
+                                     button_color="gray",
+                                     button_hover_color="dark gray",
+                                     progress_color="light gray"
+                                     )
+        self._slider.configure(command=self._update_values)
+        self._slider.set(0)
+        self._slider.grid(row=4, column=1, columnspan=2)        
     
     def _update_values(self, a):
         """_summary_
@@ -47,7 +59,7 @@ class TimeSlider(tk.Frame, Observable):
         return str(hour).zfill(2) + ":" + str(minute).zfill(2) + ":" + str(second).zfill(2)
     
     def get_slider_value(self) -> int:
-        return self._slider.get()
+        return self._slider.get().as_integer_ratio()[0]
     
     def get_formatted_time(self) -> str:
         return self.formatted_time
