@@ -2,6 +2,7 @@ import tkinter as tk
 import customtkinter as ctk
 
 from View.activation_button import ActivationButton
+from View.colors import Colors
 from View.observer import Observer
 from View.schedule_list_element import ScheduleListElement
 
@@ -15,7 +16,7 @@ class ScheduleList(ctk.CTkFrame, Observer):
         self._deactivated_str = "Schedule without HÄRMAPA"
         self._activated_str = "Schedule with HÄRMAPA"
         
-        self.configure(height=self._height, width=self._width, fg_color="#0057AD")
+        self.configure(height=self._height, width=self._width, fg_color=Colors.IKEA_BLUE.value)
         
         # create variable text for frame title
         self._title_lbl_text_var : tk.StringVar = tk.StringVar()
@@ -25,7 +26,7 @@ class ScheduleList(ctk.CTkFrame, Observer):
         self._title_lbl_frame = ctk.CTkFrame(self, 
                                              width=self._width, 
                                              height=30,
-                                             fg_color = "#ebe8e8",
+                                             fg_color = Colors.LIGHT_GRAY.value,
                                              )
         self._title_lbl_frame.grid(row=0,column=0,sticky="nswe")
         
@@ -40,7 +41,7 @@ class ScheduleList(ctk.CTkFrame, Observer):
         self._list_frame = ctk.CTkScrollableFrame(self, height=200, 
                        width=self._width, 
                        fg_color = "white", 
-                       scrollbar_fg_color = "#ebe8e8"
+                       scrollbar_fg_color = Colors.LIGHT_GRAY.value
                        )
         self._list_frame.grid(row=1,column=0,sticky="nswe")
         

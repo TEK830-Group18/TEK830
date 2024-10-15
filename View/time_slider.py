@@ -1,5 +1,6 @@
 import customtkinter as ctk
 
+from View.colors import Colors
 from View.observable import Observable
 from View.observer import Observer
 
@@ -15,7 +16,7 @@ class TimeSlider(ctk.CTkFrame, Observable):
         self._minute:int = 0
         self._hour:int = 0
         self.formatted_time = self.format_time(self._hour, self._minute, self._seconds)
-        self.configure(fg_color="#0057AD")
+        self.configure(fg_color=Colors.IKEA_BLUE.value)
         
         # init slider
         self._slider = ctk.CTkSlider(parent,

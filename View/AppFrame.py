@@ -1,9 +1,9 @@
 import customtkinter as ctk
 from PIL import Image
 
+from View.colors import Colors
+
 class AppFrame(ctk.CTk):
-    IKEA_BLUE = "#0057AD"
-    IKEA_YELLOW = "#FBDA0C"
    
     def __init__(self):
         super().__init__()
@@ -12,7 +12,7 @@ class AppFrame(ctk.CTk):
         image_width, image_height = self._image.size
         self._harmapa_image = ctk.CTkImage(self._image, size=(image_width-20, image_height-10))
         self.title('HÄRMAPA')
-        self.configure(fg_color = AppFrame.IKEA_BLUE)
+        self.configure(fg_color = Colors.IKEA_BLUE.value)
         
         self.window_height = 720
         self.window_width = 1280
@@ -38,6 +38,6 @@ class AppFrame(ctk.CTk):
         self.rowconfigure(0, weight=1)
         self.rowconfigure(6, weight=1)
         
-        self._title_lbl = ctk.CTkLabel(self, image=self._harmapa_image, fg_color=AppFrame.IKEA_BLUE, text="")
+        self._title_lbl = ctk.CTkLabel(self, image=self._harmapa_image, fg_color=Colors.IKEA_BLUE.value, text="")
         self._title_lbl.configure(width=image_width-20, height=image_height-10)
         self._title_lbl.place(x=20,y=10)
