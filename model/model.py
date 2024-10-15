@@ -1,10 +1,10 @@
 import json
 from typing import List
 from model.events.lamp_event import LampEvent
-from model.scheduler import Scheduler, Schedule
+from model.algorithm.abstract_mimicking_algorithm import MimickingAlgorithm, Schedule
 
 class Model():
-    def __init__(self, data: str, scheduler: Scheduler) -> None:
+    def __init__(self, data: str, scheduler: MimickingAlgorithm) -> None:
         self.user_data = self.read_data(data)
         self.schedule: Schedule = self.update_schedule(self.user_data, scheduler)
 
@@ -24,7 +24,7 @@ class Model():
                 events.append(event)
         return events
 
-    def update_schedule(self, user_data: List[LampEvent], scheduler: Scheduler) -> Schedule:
+    def update_schedule(self, user_data: List[LampEvent], scheduler: MimickingAlgorithm) -> Schedule:
         schedule = scheduler.createSchedule(user_data)
         print(schedule)
         return schedule

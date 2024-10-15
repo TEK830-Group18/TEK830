@@ -1,7 +1,7 @@
 import customtkinter as ctk
 
 from View.colors import Colors
-from View.observer import Observer
+from model.observer import Observer
 from View.time_slider import TimeSlider
 
 class ClockWidget(ctk.CTkFrame, Observer):
@@ -68,7 +68,7 @@ class ClockWidget(ctk.CTkFrame, Observer):
         self._timer_on = False
         self._time_label.configure(text=self._current_time)
         
-    def notified_update(self):
+    def notify(self):
         self.after_cancel(ctk.after_id)
         self._timer_on = False
         slider_val = self._controller.get_slider_value()

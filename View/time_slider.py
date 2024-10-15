@@ -1,8 +1,8 @@
 import customtkinter as ctk
 
 from View.colors import Colors
-from View.observable import Observable
-from View.observer import Observer
+from model.observable import Observable
+from model.observer import Observer
 
 class TimeSlider(ctk.CTkFrame, Observable):
     def __init__(self, parent):

@@ -1,4 +1,4 @@
-from model.scheduler import Scheduler
+from model.algorithm.abstract_mimicking_algorithm import MimickingAlgorithm
 from model.schedule import Schedule
 from model.events.lamp_event import LampEvent
 from model.events.lamp_action import LampAction
@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 from datetime import datetime, time
 
 # This scheduler determines the state of a lamp at each minute by checking if, in the collected data, the lamp was on more often than off at this time of day.
-class MoreThanNotScheduler(Scheduler):
+class MoreOftenThanNotMAlg(MimickingAlgorithm):
     def __init__(self) -> None:
         pass
 

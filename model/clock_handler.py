@@ -1,8 +1,8 @@
 
 import tkinter as tk
 
-from View.observable import Observable
-from View.observer import Observer
+from model.observable import Observable
+from model.observer import Observer
 
 class ClockHandler(tk.Tk, Observable):
     

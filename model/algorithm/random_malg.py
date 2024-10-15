@@ -1,26 +1,11 @@
-from abc import ABC, abstractmethod
+from model.algorithm.abstract_mimicking_algorithm import MimickingAlgorithm
 from typing import List, Dict
 from model.events.lamp_event import LampEvent
 from model.schedule import Schedule
 from datetime import datetime, time, timedelta
 import random
 
-class Scheduler(ABC):
-    """
-    Abstract base class for creating schedules.
-    Methods:
-        createSchedule(user_actions: List[LampEvent]) -> Schedule:
-            Abstract method for creating a schedule based on user actions.
-    """
-    def __init__(self) -> None:
-        pass
-
-    @abstractmethod
-    def createSchedule(self, user_actions: List[LampEvent]) -> Schedule:
-        pass
-
-
-class RandomScheduler(Scheduler):
+class RandomMAlg(MimickingAlgorithm):
     # TODO: Write a better version of this. Much is based on Github Copilot.
     periods_in_day: int
 
@@ -79,7 +64,7 @@ class RandomScheduler(Scheduler):
                         lamp_states[lamp] = None
 
                     if lamp_states[lamp] is None or lamp_states[lamp] != event.action:
-                        random_time = RandomScheduler.random_time_near_average(average_times[period])
+                        random_time = RandomMAlg.random_time_near_average(average_times[period])
                         random_event = LampEvent(
                             timestamp=datetime.combine(datetime.today(), random_time),
                             lamp=lamp,
