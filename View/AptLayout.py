@@ -43,7 +43,7 @@ class AptLayout:
         for room, coordinate in self.room_coordinations.items():
             self.darken_rooms(coordinate)
         self.display_layout(parent)
-
+        
     # Method that make room dark
     def darken_rooms(self, coordinate):
         room_image = self.aptLayoutPic.crop(coordinate)
@@ -85,5 +85,4 @@ class AptLayout:
     def display_layout(self, parent):
         self.aptLayout = ImageTk.PhotoImage(self.aptLayoutPic)
         self.aptLayoutLabel = tk.Label(parent, image = self.aptLayout)
-        self.aptLayoutLabel.pack()
-        self.aptLayoutLabel.place(x = 20, y = 10)
+        self.aptLayoutLabel.grid(row=1,column=1,sticky="E", padx=20, pady=50)

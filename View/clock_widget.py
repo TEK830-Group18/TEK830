@@ -1,9 +1,10 @@
-import tkinter as tk
+import customtkinter as ctk
 
+from View.colors import Colors
 from View.observer import Observer
 from View.time_slider import TimeSlider
 
-class ClockWidget(tk.Frame, Observer):
+class ClockWidget(ctk.CTkFrame, Observer):
     def __init__(self, parent, controller : TimeSlider):
         super().__init__(master=parent)
         
@@ -19,15 +20,15 @@ class ClockWidget(tk.Frame, Observer):
         self._seconds = 0
 
         # Configure row and column
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1)
-
+        self.grid(row=2, column=1, columnspan=2)
+        
         # Create and pack the label
-        self._time_label = tk.Label(self, text=f"{self._current_time}", font=("Helvetica", 18))
-        self._time_label.grid(row=0, column=0, padx=10, pady=20)  # Using grid to place the label
-
-        self.pack(pady=20)
-            
+        self._time_label = ctk.CTkLabel(self, text=f"{self._current_time}", font=("Helvetica", 30), text_color="white")
+        self._time_label.grid(row=0, column=0, padx=10)
+        self._time_label.configure(fg_color=Colors.IKEA_BLUE.value)
+        
+        self.configure(fg_color=Colors.IKEA_BLUE.value)
+                    
     def _update_time(self):
         if self._timer_on == True:
             if(self._seconds >= 60):
@@ -43,9 +44,9 @@ class ClockWidget(tk.Frame, Observer):
                 self._hours = 0
         
             self._current_time = self._controller.format_time(self._hours, self._minutes, self._seconds)
-            self._time_label.config(text=self._current_time)
+            self._time_label.configure(text=self._current_time)
             self._seconds += 1
-            tk.after_id = self.after(1000,self._update_time)
+            ctk.after_id = self.after(1000,self._update_time)
     
     def _get_hours_from_int(self, time:int):
         return (time // 60) % 24
@@ -65,10 +66,10 @@ class ClockWidget(tk.Frame, Observer):
     def stop_timer(self):
         self._current_time = self._controller.format_time(self._hours, self._minutes, self._seconds)
         self._timer_on = False
-        self._time_label.config(text=self._current_time)
+        self._time_label.configure(text=self._current_time)
         
     def notified_update(self):
-        self.after_cancel(tk.after_id)
+        self.after_cancel(ctk.after_id)
         self._timer_on = False
         slider_val = self._controller.get_slider_value()
         
@@ -77,5 +78,6 @@ class ClockWidget(tk.Frame, Observer):
         self._seconds = 0
         
         self._current_time = self._controller.format_time(self._hours, self._minutes, self._seconds)
-        self._time_label.config(text=self._current_time)
+        self._time_label.configure(text=self._current_time)
         self.start_timer()
+        
