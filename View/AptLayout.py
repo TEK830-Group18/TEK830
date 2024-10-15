@@ -44,7 +44,6 @@ class AptLayout:
             self.darken_rooms(coordinate)
         self.display_layout(parent)
         
-
     # Method that make room dark
     def darken_rooms(self, coordinate):
         room_image = self.aptLayoutPic.crop(coordinate)
