@@ -35,8 +35,7 @@ class LampEventDataset(Dataset):
         
         # Sort the events by timestamp
         for lamp_id in map.keys():
-            map[lamp_id].sort(key=lambda x: x.timestamp)
-
+            map[lamp_id].sort(key=lambda x: x.timestamp.hour * 60 + x.timestamp.minute)
         return map
 
     def get_state_for_minute(self, lamp_id: str, minute: int, events: list[LampEvent]) -> int:
@@ -58,7 +57,7 @@ class LampEventDataset(Dataset):
                 lo = mid
 
         return 1 if events[mid].action == LampAction.ON else 0
-
+        
     def __len__(self):
         return len(self.data)
 
