@@ -58,6 +58,20 @@ class AptLayout(Observer):
         room_dark = ImageEnhance.Brightness(room_image).enhance(self.darknessIntensity)
         self.aptLayoutPic.paste(room_dark, coordinate)
 
+    # Method to adjust the brightness of a room
+    def adjust_room_brightness(self, coordinate, brightness):
+        room_image = self.original_image.crop(coordinate)
+        room_adjusted = ImageEnhance.Brightness(room_image).enhance(brightness)
+        self.modified_image.paste(room_adjusted, coordinate)
+
+    # Method to apply brightness to all rooms
+    def apply_all_brightness(self, room_name):
+        if room_name in self.room_coordinates:
+            coordinate = self.room_coordinates[room_name]
+            brightness = self.BRIGHTNESSINTENSITY if self.room_state[room_name] else self.DARKNESSINTENSITY
+            self.adjust_room_brightness(coordinate, brightness)
+
+
     # Method to make all the room dark initially
     def update_initial_brightness(self):
         self.modified_image = self.original_image.copy()  
@@ -87,7 +101,7 @@ class AptLayout(Observer):
         else:
             print(f"Room {room_name} not found.")
 
-    
+    # Method to check the events
     def check_events(self):
         print(f"Current time: {self.current_hours:02}:{self.current_minutes:02}")
 
@@ -123,10 +137,8 @@ class AptLayout(Observer):
         self.current_minutes = self._controller.get_minutes()
 
         print(f"Update time in AptLayout: {self.current_hours:02}:{self.current_minutes:02}")
-
         self.check_events()
         
-
     # Method to update display
     def update_display(self):
         self.aptLayout = ImageTk.PhotoImage(self.modified_image)

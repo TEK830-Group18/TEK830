@@ -6,6 +6,7 @@ from View.clock_widget import ClockWidget
 from View.AptLayout import AptLayout as Apt
 from model.model import Model
 from model.scheduler import RandomScheduler
+from model.model import Model
 import threading
 
 class Application:
@@ -20,6 +21,11 @@ class Application:
         clock_widget = ClockWidget(self.app, slider)
         slider.add_observer(clock_widget)
         clock_widget.start_timer()
+
+        # Actitvation button and schedule list
+        activation_btn = ActivationButton(self.app)
+        schedule_list = ScheduleList(self.app, activation_btn)
+        activation_btn.add_observer(schedule_list)
         
         # Schedule
         schedule = self.model.schedule
@@ -27,31 +33,12 @@ class Application:
         # Apt layout
         apt = Apt(self.app, slider, schedule)
         slider.add_observer(apt)
-        apt.toggle_rooms_state("bedroom", "on")
-        apt.toggle_rooms_state("bedroom", "off")
-        
-        # Main loop
+
         self.app.mainloop()
 
     def run_model(self):
         self.model.mainloop()
-def view():
-    app = AppFrame()
     
-    slider = TimeSlider(app)
-    
-    clock_widget = ClockWidget(app, slider)
-    slider.add_observer(clock_widget)
-    # Starts the clock
-    clock_widget.start_timer()
-    apt = Apt(app)
-    activation_btn = ActivationButton(app)
-    schedule_list = ScheduleList(app, activation_btn)
-    activation_btn.add_observer(schedule_list)
-    
-    # TODO probably need to override this mainloop method as it blocks any following code.
-    app.mainloop()
-
 
 if __name__ == "__main__":
     application = Application()

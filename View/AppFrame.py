@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from PIL import Image
+import os
 
 from View.colors import Colors
 
@@ -8,7 +9,9 @@ class AppFrame(ctk.CTk):
     def __init__(self):
         super().__init__()
         # Need the image to be kept as instance variable, otherwise garbage collection removes it.
-        self._image = Image.open("Images\HÄRMAPA.png")
+        image_dir = os.path.join("Images")
+        self._image = Image.open(os.path.join(image_dir, "HÄRMAPA.png"))
+        #self._image = Image.open("Images\HÄRMAPA.png")
         image_width, image_height = self._image.size
         self._harmapa_image = ctk.CTkImage(self._image, size=(image_width-20, image_height-10))
         self.title('HÄRMAPA')
