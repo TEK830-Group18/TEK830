@@ -1,8 +1,8 @@
 import tkinter as tk
 from PIL import Image, ImageTk, ImageEnhance
-from View.observer import Observer
+from model.observer import Observer
 from View.time_slider import TimeSlider
-from model.scheduler import Schedule
+from model.schedule import Schedule
 from datetime import time
 from model.events.lamp_action import LampAction
 import os
@@ -150,3 +150,8 @@ class AptLayout(Observer):
         self.aptLayout = ImageTk.PhotoImage(self.modified_image)
         self.aptLayoutLabel = tk.Label(parent, image = self.aptLayout)
         self.aptLayoutLabel.grid(row=1,column=1,sticky="E", padx=20, pady=50)
+
+
+
+    def notify(self):
+        pass
