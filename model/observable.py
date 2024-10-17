@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from View.observer import Observer
+from model.observer import Observer
 
 class Observable(ABC):
     @abstractmethod

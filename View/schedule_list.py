@@ -3,7 +3,7 @@ import customtkinter as ctk
 
 from View.activation_button import ActivationButton
 from View.colors import Colors
-from View.observer import Observer
+from model.observer import Observer
 from View.schedule_list_element import ScheduleListElement
 
 class ScheduleList(ctk.CTkFrame, Observer):
@@ -67,7 +67,7 @@ class ScheduleList(ctk.CTkFrame, Observer):
         """
         pass
     
-    def notified_update(self):
+    def notify(self):
         if self._controller.is_activated() == True:
             self._title_lbl_text_var.set(self._activated_str)
         else:

@@ -1,8 +1,8 @@
 import tkinter as tk
 import customtkinter as ctk
 
-from View.observable import Observable
-from View.observer import Observer
+from model.observable import Observable
+from model.observer import Observer
 
 class ActivationButton(ctk.CTkFrame, Observable):
     def __init__(self, parent):

@@ -5,12 +5,12 @@ from View.AppFrame import AppFrame
 from View.clock_widget import ClockWidget
 from View.AptLayout import AptLayout as Apt
 from model.model import Model
-from model.scheduler import Scheduler, RandomScheduler
+from model.algorithm.random_malg import RandomMAlg
 import threading
 
 
 def model():
-    model = Model("tools/mock_user_data.json", RandomScheduler())
+    model = Model("tools/mock_user_data.json", RandomMAlg())
     model.mainloop()
 
 def view():
