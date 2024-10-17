@@ -6,6 +6,7 @@ import marshmallow
 from datetime import datetime
 import time
 from model.events.lamp_action import LampAction
+from model.events.abstract_event import Event
 
 
 class LampEventSchema(Schema):
@@ -19,7 +20,7 @@ class LampEventSchema(Schema):
         return LampEvent(**data)
 
 @dataclass(order=True)
-class LampEvent:
+class LampEvent(Event):
     sort_index: int = field(init=False, repr=False)
     timestamp: datetime
     lamp: str

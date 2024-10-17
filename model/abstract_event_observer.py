@@ -1,12 +1,15 @@
 from model.observer import Observer
-from abstract_event import Event
+from model.events.abstract_event import Event
+from model.events.lamp_event import LampEvent
+from abc import ABC, abstractmethod
 
-class EventObserver():
+class EventObserver(ABC):
     """
     Abstract class for observing events.
     """
     def __init__(self) -> None:
         pass
 
-    def notify(self, event: Event) -> None:
+    @abstractmethod
+    def notify(self, event: LampEvent) -> None:
         pass
