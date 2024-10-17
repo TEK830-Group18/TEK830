@@ -1,7 +1,7 @@
 from model.observer import Observer
 from abstract_event import Event
 
-class EventObserver(Observer):
+class EventObserver():
     """
     Abstract class for observing events.
     """

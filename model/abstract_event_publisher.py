@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from abstract_event import Event
+from model.events.lamp_event import LampEvent
 from model.observable import Observable
 from abstract_timer import Timer
 from abstract_event_observer import EventObserver
@@ -13,7 +13,7 @@ class EventPublisher(Observable, Timer, ABC):
         pass
 
     @abstractmethod
-    def publish(self, event: Event) -> None:
+    def publish(self, event: LampEvent) -> None:
         pass
 
     @abstractmethod
@@ -22,10 +22,6 @@ class EventPublisher(Observable, Timer, ABC):
 
     @abstractmethod
     def remove_observer(self, observer: EventObserver) -> None:
-        pass
-    
-    @abstractmethod
-    def notify_observers(self) -> None:
         pass
 
     @abstractmethod
