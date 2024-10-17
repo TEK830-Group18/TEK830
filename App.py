@@ -5,13 +5,13 @@ from View.AppFrame import AppFrame
 from View.clock_widget import ClockWidget
 from View.AptLayout import AptLayout as Apt
 from model.model import Model
-from model.scheduler import RandomScheduler
-from model.model import Model
+from model.algorithm.random_malg import RandomMAlg
+from model.algorithm.abstract_mimicking_algorithm import Schedule
 import threading
 
 class Application:
     def __init__(self):
-        self.model = Model("tools/mock_user_data.json", RandomScheduler())
+        self.model = Model("tools/mock_user_data.json", Schedule)
         self.app = AppFrame()
         self.setup_ui()
 
@@ -21,12 +21,12 @@ class Application:
         clock_widget = ClockWidget(self.app, slider)
         slider.add_observer(clock_widget)
         clock_widget.start_timer()
-
+        
         # Actitvation button and schedule list
         activation_btn = ActivationButton(self.app)
         schedule_list = ScheduleList(self.app, activation_btn)
         activation_btn.add_observer(schedule_list)
-        
+
         # Schedule
         schedule = self.model.schedule
 
@@ -38,7 +38,7 @@ class Application:
 
     def run_model(self):
         self.model.mainloop()
-    
+        
 
 if __name__ == "__main__":
     application = Application()
