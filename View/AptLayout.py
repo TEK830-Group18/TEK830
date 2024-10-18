@@ -14,6 +14,8 @@ class AptLayout(Observer):
         self._controller = controller
         self.schedule = schedule
 
+        self.processed_events = set()
+
         # Darkness intensity
         self.DARKNESSINTENSITY = 0.5
         self.BRIGHTNESSINTENSITY = 1.0
@@ -103,38 +105,33 @@ class AptLayout(Observer):
 
     # Method to check the events
     def check_events(self):
-        print(f"Current time: {self.current_hours:02}:{self.current_minutes:02}")
+        current_time = time(self.current_hours, self.current_minutes)
 
         for event in self.schedule.events:
             event_time = event.timestamp.time()
-            event_hour = event_time.hour
-            event_minute = event_time.minute
 
-            print(f"Checking event {event.lamp} at {event_hour:02}:{event_minute:02}")
-
-            if (self.current_hours == event_hour) and (self.current_minutes == event_minute):
-                self.toggle_rooms_state(event.lamp, event.action)
+            if self.time_within_tolerance(current_time, event_time):
                 print(f"Toggling {event.lamp} at {self.current_hours:02}:{self.current_minutes:02} with action {event.action}")
-        
-        self.update_display()
+                self.toggle_rooms_state(event.lamp, event.action)
+                self.processed_events.add(event_time)
     
     # Method to check if the current time is within the tolerance
     def time_within_tolerance(self, current_time : time, event_time : time, tolerance_minutes = 1):
 
-        event_hour = event_time.hour
-        event_minute = event_time.minute
-
         current_total_minutes = current_time.hour * 60 + current_time.minute
-        event_total_minutes = event_hour * 60 + event_minute
+        event_total_minutes = event_time.hour * 60 + event_time.minute
 
         time_diff = abs(current_total_minutes - event_total_minutes)
-        print(f"Current total minutes: {current_total_minutes}, Event total minutes: {event_total_minutes}, Time difference: {time_diff}")
-        return time_diff <= tolerance_minutes
 
+        if time_diff > 720:
+            time_diff = 1440 - time_diff
+        
+        return time_diff <= tolerance_minutes
+    
     # Method to update the observer
-    def notified_update(self):
-        self.current_hours = self._controller.get_hours()
-        self.current_minutes = self._controller.get_minutes()
+    def notify(self):
+        self.current_hours = int(self._controller.get_hours())
+        self.current_minutes = int(self._controller.get_minutes())
 
         print(f"Update time in AptLayout: {self.current_hours:02}:{self.current_minutes:02}")
         self.check_events()
@@ -150,8 +147,3 @@ class AptLayout(Observer):
         self.aptLayout = ImageTk.PhotoImage(self.modified_image)
         self.aptLayoutLabel = tk.Label(parent, image = self.aptLayout)
         self.aptLayoutLabel.grid(row=1,column=1,sticky="E", padx=20, pady=50)
-
-
-
-    def notify(self):
-        pass
