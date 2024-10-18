@@ -13,25 +13,25 @@ class AptLayout(Observer):
         super().__init__()
         self._controller = controller
         self.schedule = schedule
-
         self.processed_events = set()
+        self.last_checked_minutes = None
 
-        # Darkness intensity
+        # Darkness & Brightness intensity
         self.DARKNESSINTENSITY = 0.5
         self.BRIGHTNESSINTENSITY = 1.0
         
-        # Image directory (cross-platforms path)
-        image_dir = os.path.join("Images")
+        # Image directory and new height
+        IMAGE_DIR = os.path.join("Images")
+        IMAGE_NAME = "AptLayout.png"
+        NEW_HEIGHT = 380
 
         # Apartment layout image
-        self.original_image = Image.open(os.path.join(image_dir, "AptLayout.png"))
+        self.original_image = Image.open(os.path.join(IMAGE_DIR, IMAGE_NAME))
 
         # Resizing the layout image
         aspect_ratio = self.original_image.width / self.original_image.height
-        new_height = 380
-        new_width = int(aspect_ratio * new_height)
-        self.original_image = self.original_image.resize((new_width, new_height))
-
+        new_width = int(aspect_ratio * NEW_HEIGHT)
+        self.original_image = self.original_image.resize((new_width, NEW_HEIGHT))
         self.modified_image = self.original_image.copy()
 
         # Coordinate for rooms in the layout
@@ -53,6 +53,8 @@ class AptLayout(Observer):
         }
 
         self.display_layout(parent)
+
+        self.update_initial_brightness()
         
     # Method that make room dark
     def darken_rooms(self, coordinate):
@@ -84,24 +86,21 @@ class AptLayout(Observer):
     # Method to toggle between darkness and light
     def toggle_rooms_state(self, room_name, action):
         if room_name in self.room_coordinates:
-            if action == LampAction.ON:
-                if not self.room_state[room_name]:
-                    self.room_state[room_name] = True
-                    print(f"Turning on {room_name.capitalize()}")
-            elif action == LampAction.OFF:
-                if self.room_state[room_name]:
-                    self.room_state[room_name] = False
-                    print(f"Turning off {room_name.capitalize()}")
+            current_state = self.room_state[room_name]
 
+            if action == LampAction.ON and not current_state:
+                self.room_state[room_name] = True
+                print(f"Turning on {room_name.capitalize()}")
+
+            elif action == LampAction.OFF and current_state:
+                self.room_state[room_name] = False
+                print(f"Turning off {room_name.capitalize()}")
+
+            # Redraw the layout with the new state
             self.modified_image = self.original_image.copy()
-            self.apply_all_brightness(room_name)
-
             for room in self.room_state:
                 self.apply_all_brightness(room)
-
             self.update_display()
-        else:
-            print(f"Room {room_name} not found.")
 
     # Method to check the events
     def check_events(self):
@@ -111,7 +110,6 @@ class AptLayout(Observer):
             event_time = event.timestamp.time()
 
             if self.time_within_tolerance(current_time, event_time):
-                print(f"Toggling {event.lamp} at {self.current_hours:02}:{self.current_minutes:02} with action {event.action}")
                 self.toggle_rooms_state(event.lamp, event.action)
                 self.processed_events.add(event_time)
     
@@ -133,8 +131,9 @@ class AptLayout(Observer):
         self.current_hours = int(self._controller.get_hours())
         self.current_minutes = int(self._controller.get_minutes())
 
-        print(f"Update time in AptLayout: {self.current_hours:02}:{self.current_minutes:02}")
-        self.check_events()
+        if self.last_checked_minutes != self.current_minutes:
+            self.check_events()
+            self.last_checked_minutes = self.current_minutes
         
     # Method to update display
     def update_display(self):
