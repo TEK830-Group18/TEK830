@@ -1,33 +1,41 @@
 import tkinter as tk
 from PIL import Image, ImageTk, ImageEnhance
+from model.observer import Observer
+from View.time_slider import TimeSlider
+from model.schedule import Schedule
+from datetime import time
+from model.events.lamp_action import LampAction
 import os
 
 
-class AptLayout:
-    def __init__(self, parent):
+class AptLayout(Observer):
+    def __init__(self, parent, controller : TimeSlider, schedule : Schedule):
+        super().__init__()
+        self._controller = controller
+        self.schedule = schedule
+        self.processed_events = set()
+        self.last_checked_minutes = None
 
-        # Darkness intensity
-        self.darknessIntensity = 0.4
+        # Darkness & Brightness intensity
+        self.DARKNESSINTENSITY = 0.5
+        self.BRIGHTNESSINTENSITY = 1.0
         
-        # Image directory (cross-platforms path)
-        image_dir = os.path.join("Images")
+        # Image directory and new height
+        IMAGE_DIR = os.path.join("Images")
+        IMAGE_NAME = "AptLayout.png"
+        NEW_HEIGHT = 380
 
         # Apartment layout image
-        self.aptLayoutPic = Image.open(os.path.join(image_dir, "AptLayout.png"))
+        self.original_image = Image.open(os.path.join(IMAGE_DIR, IMAGE_NAME))
 
         # Resizing the layout image
-        aspect_ratio = self.aptLayoutPic.width / self.aptLayoutPic.height
-        old_width, old_height = self.aptLayoutPic.size
-        new_height = 380
-        new_width = int(aspect_ratio * new_height)
-        self.aptLayoutPic = self.aptLayoutPic.resize((new_width, new_height))
-
-        # Scaling factors 
-        self.scale_width = new_width / old_width
-        self.scale_height = new_height / old_height
+        aspect_ratio = self.original_image.width / self.original_image.height
+        new_width = int(aspect_ratio * NEW_HEIGHT)
+        self.original_image = self.original_image.resize((new_width, NEW_HEIGHT))
+        self.modified_image = self.original_image.copy()
 
         # Coordinate for rooms in the layout
-        self.room_coordinations = {
+        self.room_coordinates = {
             "bedroom" : (128, 29, 192, 153),
             "livingroom" : (90, 158, 192, 309),
             "kitchen" : (26, 158, 90, 309),
@@ -35,14 +43,18 @@ class AptLayout:
             "hall" : (95, 29, 127, 153)
         }
         
-        # Intial state of all rums (Dark)
+        #Intial state of all rums (Dark)
         self.room_state = {
-            room: True for room in self.room_coordinations
+            "bedroom" : False,
+            "livingroom" : False,
+            "kitchen" : False,
+            "bathroom" : False,
+            "hall" : False
         }
 
-        for room, coordinate in self.room_coordinations.items():
-            self.darken_rooms(coordinate)
         self.display_layout(parent)
+
+        self.update_initial_brightness()
         
     # Method that make room dark
     def darken_rooms(self, coordinate):
@@ -50,39 +62,87 @@ class AptLayout:
         room_dark = ImageEnhance.Brightness(room_image).enhance(self.darknessIntensity)
         self.aptLayoutPic.paste(room_dark, coordinate)
 
-    # Method that turn on the light
-    def brighten_rooms(self, coordinate):
-        old_image = Image.open(os.path.join("Images", "AptLayout.png"))
-        old_room_image = old_image.crop(coordinate)
-        self.aptLayoutPic.paste(old_room_image, coordinate)
+    # Method to adjust the brightness of a room
+    def adjust_room_brightness(self, coordinate, brightness):
+        room_image = self.original_image.crop(coordinate)
+        room_adjusted = ImageEnhance.Brightness(room_image).enhance(brightness)
+        self.modified_image.paste(room_adjusted, coordinate)
+
+    # Method to apply brightness to all rooms
+    def apply_all_brightness(self, room_name):
+        if room_name in self.room_coordinates:
+            coordinate = self.room_coordinates[room_name]
+            brightness = self.BRIGHTNESSINTENSITY if self.room_state[room_name] else self.DARKNESSINTENSITY
+            self.adjust_room_brightness(coordinate, brightness)
+
+
+    # Method to make all the room dark initially
+    def update_initial_brightness(self):
+        self.modified_image = self.original_image.copy()  
+        for room in self.room_state:  
+            self.apply_all_brightness(room)
+        self.update_display()
 
     # Method to toggle between darkness and light
-    def toggle_rooms(self, room_name):
-        if room_name in self.room_coordinations:
-            coordinate = self.room_coordinations[room_name]
+    def toggle_rooms_state(self, room_name, action):
+        if room_name in self.room_coordinates:
+            current_state = self.room_state[room_name]
 
-            if self.room_state[room_name]:
-                self.brighten_rooms(coordinate)
-            else:
-                self.darken_rooms(coordinate)
+            if action == LampAction.ON and not current_state:
+                self.room_state[room_name] = True
+                print(f"Turning on {room_name.capitalize()}")
 
-            # Toggle between states
-            self.room_state[room_name] = not self.room_state[room_name]
+            elif action == LampAction.OFF and current_state:
+                self.room_state[room_name] = False
+                print(f"Turning off {room_name.capitalize()}")
 
-            # Update the display image
+            # Redraw the layout with the new state
+            self.modified_image = self.original_image.copy()
+            for room in self.room_state:
+                self.apply_all_brightness(room)
             self.update_display()
 
-        else:
-            print(f"Room {room_name} not found.")
+    # Method to check the events
+    def check_events(self):
+        current_time = time(self.current_hours, self.current_minutes)
+
+        for event in self.schedule.events:
+            event_time = event.timestamp.time()
+
+            if self.time_within_tolerance(current_time, event_time):
+                self.toggle_rooms_state(event.lamp, event.action)
+                self.processed_events.add(event_time)
     
+    # Method to check if the current time is within the tolerance
+    def time_within_tolerance(self, current_time : time, event_time : time, tolerance_minutes = 1):
+
+        current_total_minutes = current_time.hour * 60 + current_time.minute
+        event_total_minutes = event_time.hour * 60 + event_time.minute
+
+        time_diff = abs(current_total_minutes - event_total_minutes)
+
+        if time_diff > 720:
+            time_diff = 1440 - time_diff
+        
+        return time_diff <= tolerance_minutes
+    
+    # Method to update the observer
+    def notify(self):
+        self.current_hours = int(self._controller.get_hours())
+        self.current_minutes = int(self._controller.get_minutes())
+
+        if self.last_checked_minutes != self.current_minutes:
+            self.check_events()
+            self.last_checked_minutes = self.current_minutes
+        
     # Method to update display
     def update_display(self):
-        self.aptLayout = ImageTk.PhotoImage(self.aptLayoutPic)
+        self.aptLayout = ImageTk.PhotoImage(self.modified_image)
         self.aptLayoutLabel.configure(image = self.aptLayout)
         self.aptLayoutLabel.image_names = self.aptLayout
 
-    # Method to put the picture on the main frame
+        # Method to put the picture on the main frame
     def display_layout(self, parent):
-        self.aptLayout = ImageTk.PhotoImage(self.aptLayoutPic)
+        self.aptLayout = ImageTk.PhotoImage(self.modified_image)
         self.aptLayoutLabel = tk.Label(parent, image = self.aptLayout)
         self.aptLayoutLabel.grid(row=1,column=1,sticky="E", padx=20, pady=50)
