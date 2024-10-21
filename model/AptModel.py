@@ -1,12 +1,14 @@
-import View.AptLayout as AptView
+import View.demoModel as AptView
 from View.time_slider import TimeSlider
 from model.schedule import Schedule
 from datetime import time
 from model.events.lamp_action import LampAction
 
 class AptModel:
-    def __init__(self, schedule : Schedule):
+    def __init__(self, schedule : Schedule, time_slider : TimeSlider):
         self.schedule = schedule
+        self.timeSlider = time_slider
+        self.last_checked_minutes = None
         self.current_hours = 0
         self.current_minutes = 0
 
@@ -68,3 +70,15 @@ class AptModel:
             time_diff = 1440 - time_diff
         
         return time_diff <= tolerance_minutes
+    
+    def notify(self):
+        self.current_hours = int(self.timeSlider.get_hours())
+        self.current_minutes = int(self.timeSlider.get_minutes())
+        self.current_time = time(self.current_hours, self.current_minutes)
+
+        if self.last_checked_minutes != self.current_minutes:
+            self.current_hours = self.current_hours
+            self.current_minutes = self.current_minutes
+            self.check_events()
+            self.last_checked_minutes = self.current_minutes
+            self.timeSlider.notify_observers()

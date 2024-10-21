@@ -3,12 +3,11 @@ from View.schedule_list import ScheduleList
 from View.time_slider import TimeSlider
 from View.AppFrame import AppFrame
 from View.clock_widget import ClockWidget
-from View.AptLayout import AptLayout as Apt
+from View.demoModel import demoModel as demoModel
 from model.model import Model
 from model.algorithm.random_malg import RandomMAlg
 from model.algorithm.abstract_mimicking_algorithm import Schedule
 from model.AptModel import AptModel
-from controller.AptController import AptController
 import threading
 
 class Application:
@@ -29,11 +28,10 @@ class Application:
         schedule_list = ScheduleList(self.app, activation_btn)
         activation_btn.add_observer(schedule_list)
 
-        # Apt layout
-        model = AptModel(self.model.schedule)
-        controller = AptController(model, slider)
-        apt = Apt(self.app, controller, model)
-        slider.add_observer(apt)
+        # Demo model
+        model = AptModel(self.model.schedule, slider)
+        demo = demoModel(self.app, model)
+        slider.add_observer(demo)
 
         self.app.mainloop()
 
