@@ -6,31 +6,43 @@ from View.clock_widget import ClockWidget
 from View.AptLayout import AptLayout as Apt
 from model.model import Model
 from model.algorithm.random_malg import RandomMAlg
+from model.algorithm.abstract_mimicking_algorithm import Schedule
+from model.AptModel import AptModel
+from controller.AptController import AptController
 import threading
 
+class Application:
+    def __init__(self):
+        self.model = Model("tools/mock_user_data.json", Schedule)
+        self.app = AppFrame()
+        self.setup_ui()
 
-def model():
-    model = Model("tools/mock_user_data.json", RandomMAlg())
-    model.mainloop()
+    def setup_ui(self):
+        # Slider and clock widget
+        slider = TimeSlider(self.app)
+        clock_widget = ClockWidget(self.app, slider)
+        slider.add_observer(clock_widget)
+        clock_widget.start_timer()
+        
+        # Actitvation button and schedule list
+        activation_btn = ActivationButton(self.app)
+        schedule_list = ScheduleList(self.app, activation_btn)
+        activation_btn.add_observer(schedule_list)
 
-def view():
-    app = AppFrame()
-    
-    slider = TimeSlider(app)
-    
-    clock_widget = ClockWidget(app, slider)
-    slider.add_observer(clock_widget)
-    # Starts the clock
-    clock_widget.start_timer()
-    apt = Apt(app)
-    activation_btn = ActivationButton(app)
-    schedule_list = ScheduleList(app, activation_btn)
-    activation_btn.add_observer(schedule_list)
-    
-    # TODO probably need to override this mainloop method as it blocks any following code.
-    app.mainloop()
+        # Apt layout
+        model = AptModel(self.model.schedule)
+        controller = AptController(model, slider)
+        apt = Apt(self.app, controller, model)
+        slider.add_observer(apt)
 
+        self.app.mainloop()
+
+    def run_model(self):
+        self.model.mainloop()
+        
 
 if __name__ == "__main__":
-    model_thread: threading.Thread = threading.Thread(target=model())
-    view_thread: threading.Thread = threading.Thread(target=view())
+    application = Application()
+
+    model_thread: threading.Thread = threading.Thread(application.run_model())
+    model_thread.start()
