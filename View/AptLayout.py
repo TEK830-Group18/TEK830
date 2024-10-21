@@ -2,14 +2,12 @@ import tkinter as tk
 from PIL import Image, ImageTk, ImageEnhance
 from model.abstract_event_observer import EventObserver
 from model.observer import Observer
-import controller.AptController as AptController
 import model.demo_model as demo_model
 import os
 
-class AptLayout(EventObserver):
-    def __init__(self, parent, controller : AptController, model : demo_model):
+class AptLayout(Observer):
+    def __init__(self, parent, model : demo_model):
         super().__init__()
-        self.controller = controller
         self.model = model
         
         # Image directory and new height
@@ -62,7 +60,7 @@ class AptLayout(EventObserver):
 
     # Method to toggle room states
     def toggle_rooms_state(self, room_name, action):
-        self.controller.model.toggle_rooms_state(room_name, action)
+        self.model.toggle_rooms_state(room_name, action)
         self.update_layout()
 
     # Method to update the layout
@@ -86,6 +84,6 @@ class AptLayout(EventObserver):
 
     # Method to update the observer
     def notify(self):
-        self.controller.notify()
+        self.model.notify()
         self.update_layout()
         self.update_display()

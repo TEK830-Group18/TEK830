@@ -10,6 +10,8 @@ class DemoModel(Model):
     def __init__(self, schedule : Schedule, timer: Timer):
         self.timer = timer
         self.schedule = schedule
+        self.timeSlider = time_slider
+        self.last_checked_minutes = None
         self.current_hours = 0
         self.current_minutes = 0
         self.observers = []
@@ -106,3 +108,15 @@ class DemoModel(Model):
     def get_user_schedule(self):
         raise NotImplementedError
 
+    
+    def notify(self):
+        self.current_hours = int(self.timeSlider.get_hours())
+        self.current_minutes = int(self.timeSlider.get_minutes())
+        self.current_time = time(self.current_hours, self.current_minutes)
+
+        if self.last_checked_minutes != self.current_minutes:
+            self.current_hours = self.current_hours
+            self.current_minutes = self.current_minutes
+            self.check_events()
+            self.last_checked_minutes = self.current_minutes
+            self.timeSlider.notify_observers()
