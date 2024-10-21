@@ -4,7 +4,7 @@ from model.schedule import Schedule
 from datetime import time
 from model.events.lamp_action import LampAction
 
-class demo_model:
+class DemoModel:
     def __init__(self, schedule : Schedule, time_slider : TimeSlider):
         self.schedule = schedule
         self.timeSlider = time_slider
