@@ -5,7 +5,7 @@ from abstract_timer import Timer
 from abstract_event_observer import EventObserver
 from datetime import datetime
 
-class EventPublisher(Observable, Timer, ABC):
+class EventPublisher(Observable, ABC):
     """
     Abstract class for publishing events.
     """

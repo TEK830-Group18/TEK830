@@ -7,7 +7,7 @@ from View.AptLayout import AptLayout as Apt
 from model.model import Model
 from model.algorithm.random_malg import RandomMAlg
 from model.algorithm.abstract_mimicking_algorithm import Schedule
-from model.AptModel import AptModel
+from model.demo_model import DemoModel
 from controller.AptController import AptController
 import threading
 
@@ -30,7 +30,7 @@ class Application:
         activation_btn.add_observer(schedule_list)
 
         # Apt layout
-        model = AptModel(self.model.schedule)
+        model = DemoModel(self.model.schedule)
         controller = AptController(model, slider)
         apt = Apt(self.app, controller, model)
         slider.add_observer(apt)

@@ -1,10 +1,10 @@
-import model.AptModel as AptModel
+import model.demo_model as demo_model
 import View.time_slider as TimeSlider
 import View.time_slider as TimeSlider
 from datetime import time
 
 class AptController:
-    def __init__(self, model : AptModel, timeSlider : TimeSlider):
+    def __init__(self, model : demo_model, timeSlider : TimeSlider):
         self.model = model
         self.timeSlider = timeSlider
         self.last_checked_minutes = None

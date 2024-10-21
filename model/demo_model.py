@@ -1,58 +1,108 @@
-
-from datetime import datetime
-import json
-from typing import List
+import View.AptLayout as AptView
+from View.time_slider import TimeSlider
 from model.abstract_model import Model
-from model.events.lamp_event import LampEvent
+from model.abstract_timer import Timer
 from model.schedule import Schedule
-
+from datetime import time
+from model.events.lamp_action import LampAction
 
 class DemoModel(Model):
-    def __init__(self):
-        super().__init__()
-        self._observers = []
-        self._user_data_path = "tools/mock_user_data.json"
-        self._user_schedule = self.get_user_schedule()
+    def __init__(self, schedule : Schedule, timer: Timer):
+        self.timer = timer
+        self.schedule = schedule
+        self.current_hours = 0
+        self.current_minutes = 0
+        self.observers = []
+
+        self.room_states = {
+            "bedroom" : False,
+            "livingroom" : False,
+            "kitchen" : False,
+            "bathroom" : False,
+            "hall" : False
+        }
+
+        self.processed_events = set()
+
+        self.DARKNESSINTENSITY = 0.5
+        self.BRIGHTNESSINTENSITY = 1.0
+
+        # Coordinate for rooms in the layout
+        self.room_coordinates = {
+            "bedroom" : (128, 29, 192, 153),
+            "livingroom" : (90, 158, 192, 309),
+            "kitchen" : (26, 158, 90, 309),
+            "bathroom" : (26, 29, 90, 153),
+            "hall" : (95, 29, 127, 153)
+        }
+
+
+    # Toggle room states
+    def toggle_rooms_state(self, room_name, action):
+        if room_name in self.room_coordinates:
+            current_state = self.room_states[room_name]
+
+            if action == LampAction.ON and not current_state:
+                self.room_states[room_name] = True
+                print(f"Turning on {room_name.capitalize()}")
+
+            elif action == LampAction.OFF and current_state:
+                self.room_states[room_name] = False
+                print(f"Turning off {room_name.capitalize()}")
     
-    def mainloop(self) -> None:
-        pass
 
-    def get_schedule(self) -> Schedule:
-        pass
+    # Method to check the events
+    def check_events(self):
+        current_time = time(self.current_hours, self.current_minutes)
+
+        for event in self.schedule.events:
+            event_time = event.timestamp.time()
+            
+            if self.time_within_tolerance(current_time, event_time):
+                self.toggle_rooms_state(event.lamp, event.action)
+                self.processed_events.add(event_time)
     
-    def get_user_schedule(self) -> Schedule:
-        user_data_lst = self._read_data(self.user_data_path)
-        user_schedule = Schedule().createSchedule(user_data_lst)
-        return user_schedule
+    # Method to check if the current time is within the tolerance
+    def time_within_tolerance(self, current_time : time, event_time : time, tolerance_minutes = 1):
+        current_total_minutes = current_time.hour * 60 + current_time.minute
+        event_total_minutes = event_time.hour * 60 + event_time.minute
+        time_diff = abs(current_total_minutes - event_total_minutes)
 
-    def get_time(self) -> datetime:
-        pass
+        if time_diff > 720:
+            time_diff = 1440 - time_diff
+        
+        return time_diff <= tolerance_minutes
 
-    def set_time(self, time: datetime) -> None:
-        pass
+    def start(self):
+        self.timer.start()
 
-    def start(self) -> None:
-        pass
+    def stop(self):
+        self.timer.stop()
 
-    def stop(self) -> None:
-        pass
+    def get_time(self):
+        self.timer.get_time()
+        
+    def set_time(self, time):
+        self.timer.set_time(time)
 
-    def add_observer(self, observer) -> None:
-        pass
+    def add_observer(self, observer):
+        self.observers.append(observer)
 
-    def remove_observer(self, observer) -> None:
-        pass
+    def remove_observer(self, observer):
+        self.observers.remove(observer)
 
-    def notify_observers(self) -> None:
-        pass
-    
-    def _read_data(self, path:str):
-        with open(path, mode='r') as f:
-            json_data = json.load(f)
+    def notify_observers(self):
+        raise NotImplementedError
 
-            events : List[LampEvent]= []
-            json_events = json_data['lamp_usage']
-            for e in json_events:
-                event = LampEvent.from_json(e)
-                events.append(event)
-        return events
+    def publish(self, event):
+        raise NotImplementedError
+
+    def mainloop(self):
+        raise NotImplementedError
+
+    def get_schedule(self):
+        raise NotImplementedError
+
+    def get_user_schedule(self):
+        raise NotImplementedError
+

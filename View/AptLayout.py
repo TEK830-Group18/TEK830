@@ -2,11 +2,11 @@ import tkinter as tk
 from PIL import Image, ImageTk, ImageEnhance
 from model.observer import Observer
 import controller.AptController as AptController
-import model.AptModel as AptModel
+import model.demo_model as demo_model
 import os
 
 class AptLayout(Observer):
-    def __init__(self, parent, controller : AptController, model : AptModel):
+    def __init__(self, parent, controller : AptController, model : demo_model):
         super().__init__()
         self.controller = controller
         self.model = model
