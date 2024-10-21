@@ -1,10 +1,10 @@
-import View.demoModel as AptView
+import View.AptLayout as AptView
 from View.time_slider import TimeSlider
 from model.schedule import Schedule
 from datetime import time
 from model.events.lamp_action import LampAction
 
-class AptModel:
+class demo_model:
     def __init__(self, schedule : Schedule, time_slider : TimeSlider):
         self.schedule = schedule
         self.timeSlider = time_slider

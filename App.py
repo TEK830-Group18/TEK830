@@ -3,11 +3,11 @@ from View.schedule_list import ScheduleList
 from View.time_slider import TimeSlider
 from View.AppFrame import AppFrame
 from View.clock_widget import ClockWidget
-from View.demoModel import demoModel as demoModel
+from View.AptLayout import AptLayout as Apt
 from model.model import Model
 from model.algorithm.random_malg import RandomMAlg
 from model.algorithm.abstract_mimicking_algorithm import Schedule
-from model.AptModel import AptModel
+from model.demo_model import demo_model
 import threading
 
 class Application:
@@ -29,9 +29,9 @@ class Application:
         activation_btn.add_observer(schedule_list)
 
         # Demo model
-        model = AptModel(self.model.schedule, slider)
-        demo = demoModel(self.app, model)
-        slider.add_observer(demo)
+        model = demo_model(self.model.schedule, slider)
+        apt = Apt(self.app, model)
+        slider.add_observer(apt)
 
         self.app.mainloop()
 
