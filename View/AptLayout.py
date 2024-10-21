@@ -35,6 +35,7 @@ class AptLayout(Observer):
             self.apply_all_brightness(room)
         self.update_display()
     
+    # Method to apply darkness or brightneess to the room
     def darken_rooms(self, room_name):
         if room_name in self.model.room_coordinates:
             coordinate = self.model.room_coordinates[room_name]
@@ -42,6 +43,7 @@ class AptLayout(Observer):
             room_dark = ImageEnhance.Brightness(room_image).enhance(self.model.DARKNESSINTENSITY)
             self.modified_image.paste(room_dark, coordinate)
 
+    # Method to apply brightness to the room
     def apply_all_brightness(self, room_name):
         if room_name in self.model.room_coordinates:
             coordinate = self.model.room_coordinates[room_name]
@@ -51,6 +53,7 @@ class AptLayout(Observer):
             )
             self.adjust_room_brightness(coordinate, brightness)
 
+    # Method to adjust room brightness
     def adjust_room_brightness(self, coordinate, brightness):
         room_image = self.original_image.crop(coordinate)
         room_adjusted = ImageEnhance.Brightness(room_image).enhance(brightness)
@@ -85,5 +88,3 @@ class AptLayout(Observer):
         self.controller.notify()
         self.update_layout()
         self.update_display()
-        
-    
