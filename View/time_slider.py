@@ -39,7 +39,6 @@ class TimeSlider(ctk.CTkFrame):
     def _update_time_in_model(self, a):
         self.set_time()
     
-    
     def get_slider_value(self) -> int:
         return self._slider.get().as_integer_ratio()[0]
     
@@ -56,8 +55,7 @@ class TimeSlider(ctk.CTkFrame):
         return self._slider.get() % 60
             
     def set_time(self):
-        #TODO convert int to datetime
-        time = datetime()
+        time = datetime().now().replace(hour=self.get_hours(),minute=self.get_minutes(),second=0)
         self.model.set_time(time)
     
     def get_time(self) -> datetime:
