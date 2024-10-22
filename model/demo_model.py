@@ -68,8 +68,8 @@ class DemoModel(Model):
         return time_diff <= tolerance_minutes
 
     def start(self):
-        self.timer.set_time(datetime.now().replace(hour=0,minute=0,second=0))
         self.timer.start()
+        self.timer.set_time(datetime.now().replace(hour=0,minute=0,second=0))
 
     def stop(self):
         self.timer.stop()
@@ -85,7 +85,6 @@ class DemoModel(Model):
         
         if prev_active_lamps != self.currectly_active_lamps:
             lamps_to_update = list(set(self.currectly_active_lamps) - set(prev_active_lamps))
-            print(f"{lamps_to_update}: are the ones t update")
             for lamp in lamps_to_update:
                 event = LampEvent(time,lamp,LampAction.ON)
                 print(event)
@@ -107,11 +106,6 @@ class DemoModel(Model):
 
     def mainloop(self):
         self.start()
-        print("strated")
-        while True:
-            t.sleep(1)
-            print(self.get_time())
-            
 
     def get_schedule(self):
         raise NotImplementedError

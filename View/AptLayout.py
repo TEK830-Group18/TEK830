@@ -15,18 +15,6 @@ class AptLayout(EventObserver):
         IMAGE_NAME = "AptLayout.png"
         NEW_HEIGHT = 380
 
-        # Apartment layout image
-        self.original_image = Image.open(os.path.join(IMAGE_DIR, IMAGE_NAME))
-
-        # Resizing the layout image
-        aspect_ratio = self.original_image.width / self.original_image.height
-        new_width = int(aspect_ratio * NEW_HEIGHT)
-        self.original_image = self.original_image.resize((new_width, NEW_HEIGHT))
-        self.modified_image = self.original_image.copy()
-
-        self.display_layout(parent)
-        self.update_initial_brightness()
-
         self.room_states = {
             "bedroom" : False,
             "livingroom" : False,
@@ -46,6 +34,18 @@ class AptLayout(EventObserver):
             "bathroom" : (26, 29, 90, 153),
             "hall" : (95, 29, 127, 153)
         }
+        # Apartment layout image
+        self.original_image = Image.open(os.path.join(IMAGE_DIR, IMAGE_NAME))
+
+        # Resizing the layout image
+        aspect_ratio = self.original_image.width / self.original_image.height
+        new_width = int(aspect_ratio * NEW_HEIGHT)
+        self.original_image = self.original_image.resize((new_width, NEW_HEIGHT))
+        self.modified_image = self.original_image.copy()
+
+        self.display_layout(parent)
+        self.update_initial_brightness()
+
         
     # Method to make all the room dark initially
     def update_initial_brightness(self):

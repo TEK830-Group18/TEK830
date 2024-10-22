@@ -31,6 +31,7 @@ class ClockWidget(ctk.CTkFrame):
         self._time_label.configure(fg_color=Colors.IKEA_BLUE.value)
         
         self.configure(fg_color=Colors.IKEA_BLUE.value)
+        self.start_timer_updates()
     
     def _get_hours_from_int(self, time:int):
         return (time // 60) % 24
@@ -43,8 +44,8 @@ class ClockWidget(ctk.CTkFrame):
         return seconds
     
     # Get time
-    def get_time(self):
-        return self.model.get_time()
+    def get_time_as_minutes(self):
+        return self.model.get_time().hour * 60 + self.model.get_time().minute
     
     def _format_time(self, hour, minute, second) -> str:
         """Formats hours, minutes and seconds as HH:MM:SS.
@@ -59,12 +60,16 @@ class ClockWidget(ctk.CTkFrame):
         """
         return str(hour).zfill(2) + ":" + str(minute).zfill(2) + ":" + str(second).zfill(2)
     
+    def start_timer_updates(self):
+        if not self._timer_on:
+            self._timer_on = True
+            self.update_time()
+    
     def update_time(self):
-        # Get time from model
-        self._time = self.get_time().hour * 60 + self.get_time().minute
-        self._hours = self._get_hours_from_int(self._time)
-        self._minutes = self._get_minutes_from_int(self._time)
-        self._seconds = self._get_seconds_from_value(self._time)
+        self._time = self.get_time_as_minutes()
+        self._hours = self.model.get_time().hour
+        self._minutes = self.model.get_time().minute
+        self._seconds = self.model.get_time().second
         self._displayed_time = self._format_time(self._hours, self._minutes, self._seconds)
-        self._time_label.config(self._displayed_time)
+        self._time_label.configure(text = self._displayed_time)
         self.after(1000, self.update_time)

@@ -1,3 +1,4 @@
+from datetime import datetime
 from View.activation_button import ActivationButton
 from View.schedule_list import ScheduleList
 from View.time_slider import TimeSlider
@@ -14,8 +15,9 @@ import threading
 from model.timer import Timer
 
 class Application:
-    def __init__(self):
-        self.model = DemoModel(MoreOftenThanNotMAlg(), Timer())
+    def __init__(self, model):
+        self.model = model
+        self.model.set_time(datetime.now().replace(hour=0,minute=0,second=0))
         self.app = AppFrame()
         self.setup_ui()
 
@@ -43,7 +45,10 @@ class Application:
     
         
 if __name__ == "__main__":
-    app = Application()
+    timer = Timer()
+    schduler = MoreOftenThanNotMAlg()
+    model = DemoModel(schduler, timer)
+    app = Application(model)
     # view_thread: threading.Thread = threading.Thread(target=app.run_ui)
     model_thread: threading.Thread = threading.Thread(target=app.run_model)
     
@@ -51,6 +56,5 @@ if __name__ == "__main__":
     
     model_thread.start()
     app.run_ui()
-    # view_thread.start()
     
     

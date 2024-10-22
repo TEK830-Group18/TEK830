@@ -33,7 +33,7 @@ class TimeSlider(ctk.CTkFrame):
                                      )
         self._slider.configure(command=self._update_time_in_model)
         self._slider.set(0)
-        self._slider.grid(row=4, column=1, columnspan=2)        
+        self._slider.grid(row=4, column=1, columnspan=2)
     
     def _update_time_in_model(self, a):
         self.set_time()
