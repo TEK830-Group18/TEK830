@@ -1,16 +1,22 @@
+import json
+from typing import List
 import View.AptLayout as AptView
 from View.time_slider import TimeSlider
 from model.abstract_model import Model
 from model.abstract_timer import Timer
+from model.algorithm.abstract_mimicking_algorithm import MimickingAlgorithm
+from model.events.lamp_event import LampEvent
 from model.schedule import Schedule
-from datetime import time
+from datetime import datetime, time
 from model.events.lamp_action import LampAction
 
 class DemoModel(Model):
-    def __init__(self, schedule : Schedule, timer: Timer):
+    def __init__(self, scheduler : MimickingAlgorithm, timer: Timer):
         self.timer = timer
-        self.schedule = schedule
-        self.timeSlider = time_slider
+        self.scheduler = scheduler
+        self.schedule = self.get_user_schedule()
+        self.active_lamps_list = self.create_active_lamp_list()
+        self.currectly_active_lamps = []
         self.last_checked_minutes = None
         self.current_hours = 0
         self.current_minutes = 0
@@ -76,6 +82,7 @@ class DemoModel(Model):
         return time_diff <= tolerance_minutes
 
     def start(self):
+        self.timer.set_time(datetime.now().replace(hour=0,minute=0,second=0))
         self.timer.start()
 
     def stop(self):
@@ -85,7 +92,15 @@ class DemoModel(Model):
         self.timer.get_time()
         
     def set_time(self, time):
+        time_int = time.timestamp.hour * 60 + time.timestamp.minute
+        prev_active_lamps = self.currectly_active_lamps
         self.timer.set_time(time)
+        self.currectly_active_lamps = self.active_lamps_list[time_int]
+        if prev_active_lamps != self.currectly_active_lamps:
+            lamps_to_update = list(set(self.currectly_active_lamps) - set(prev_active_lamps))
+            for lamp in lamps_to_update:
+                event = LampEvent(time,lamp,"ON")
+                self.publish(event)
 
     def add_observer(self, observer):
         self.observers.append(observer)
@@ -97,18 +112,56 @@ class DemoModel(Model):
         raise NotImplementedError
 
     def publish(self, event):
-        raise NotImplementedError
+        # when events published, notify observers
+        for o in self.observers:
+            o.notify(event)
 
     def mainloop(self):
-        raise NotImplementedError
+        self.start()
+        # get time and compare with schedule, publish events when neccessary.
 
     def get_schedule(self):
         raise NotImplementedError
 
     def get_user_schedule(self):
-        raise NotImplementedError
-
+        user_data = "tools\mock_user_data.json"
+        user_events = self.read_data(user_data)
+        user_schedule = self.scheduler.createSchedule(user_events)     
+        return user_schedule
     
+    def create_active_lamp_list(self) -> List[List[str]]:
+        events = self.schedule.events[:]
+        
+        active_lamps = [[] for _ in range(1440)]
+        
+        for e in events:
+            lamp_name = e.lamp
+            for e2 in events:
+                event_timestamp = e2.timestamp.hour * 60 + e2.timestamp.minute
+                if e2.lamp == lamp_name:
+                    for i in range(event_timestamp,1440):
+                        if e2.action == "ON":
+                            active_lamps[i].append(lamp_name)
+                events.remove(e2)
+                
+        return active_lamps
+        
+                
+        
+                        
+    
+    def read_data(self, path:str):
+        with open(path, mode='r') as f:
+            json_data = json.load(f)
+
+            events : List[LampEvent]= []
+            json_events = json_data['lamp_usage']
+            for e in json_events:
+                event = LampEvent.from_json(e)
+                events.append(event)
+        return events
+    
+    # Nah bruh
     def notify(self):
         self.current_hours = int(self.timeSlider.get_hours())
         self.current_minutes = int(self.timeSlider.get_minutes())
@@ -119,4 +172,3 @@ class DemoModel(Model):
             self.current_minutes = self.current_minutes
             self.check_events()
             self.last_checked_minutes = self.current_minutes
-            self.timeSlider.notify_observers()

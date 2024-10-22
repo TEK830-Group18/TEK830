@@ -20,8 +20,6 @@ class Application:
         # Slider and clock widget
         slider = TimeSlider(self.app)
         clock_widget = ClockWidget(self.app, slider)
-        slider.add_observer(clock_widget)
-        clock_widget.start_timer()
         
         # Actitvation button and schedule list
         activation_btn = ActivationButton(self.app)
@@ -31,8 +29,7 @@ class Application:
         # Demo model
         model = DemoModel(self.model.schedule, slider)
         apt = Apt(self.app, model)
-        slider.add_observer(apt)
-
+        
         self.app.mainloop()
 
     def run_model(self):

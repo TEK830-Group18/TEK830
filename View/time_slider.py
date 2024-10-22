@@ -64,6 +64,5 @@ class TimeSlider(ctk.CTkFrame):
         return self.model.get_time()
     
     def update_slider_value(self):
-        #TODO get value from model
         time = self.get_time().hour * 60 + self.get_time().minute
         self._slider.set(time)
