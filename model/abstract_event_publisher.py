@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
+from model.abstract_event_observer import EventObserver
 from model.events.lamp_event import LampEvent
 from model.observable import Observable
-from abstract_timer import ATimer
-from abstract_event_observer import EventObserver
 from datetime import datetime
 
 class EventPublisher(Observable, ABC):

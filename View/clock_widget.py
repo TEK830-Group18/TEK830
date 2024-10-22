@@ -16,7 +16,7 @@ class ClockWidget(ctk.CTkFrame):
         self._time = 0 
         
         # Set current time as starting value on the controller, formatted 
-        self._displayed_time = model.get_time()
+        self._displayed_time = self._format_time(0,0,0)
         
         self._hours = 0
         self._minutes = 0
@@ -67,4 +67,4 @@ class ClockWidget(ctk.CTkFrame):
         self._seconds = self._get_seconds_from_value(self._time)
         self._displayed_time = self._format_time(self._hours, self._minutes, self._seconds)
         self._time_label.config(self._displayed_time)
-        pass
+        self.after(1000, self.update_time)

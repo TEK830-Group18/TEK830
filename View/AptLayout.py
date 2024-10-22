@@ -5,7 +5,7 @@ from model.observer import Observer
 import model.demo_model as demo_model
 import os
 
-class AptLayout(Observer):
+class AptLayout(EventObserver):
     def __init__(self, parent, model : demo_model):
         super().__init__()
         self.model = model
@@ -27,6 +27,26 @@ class AptLayout(Observer):
         self.display_layout(parent)
         self.update_initial_brightness()
 
+        self.room_states = {
+            "bedroom" : False,
+            "livingroom" : False,
+            "kitchen" : False,
+            "bathroom" : False,
+            "hall" : False
+        }
+
+        self.DARKNESSINTENSITY = 0.5
+        self.BRIGHTNESSINTENSITY = 1.0
+
+        # Coordinate for rooms in the layout
+        self.room_coordinates = {
+            "bedroom" : (128, 29, 192, 153),
+            "livingroom" : (90, 158, 192, 309),
+            "kitchen" : (26, 158, 90, 309),
+            "bathroom" : (26, 29, 90, 153),
+            "hall" : (95, 29, 127, 153)
+        }
+        
     # Method to make all the room dark initially
     def update_initial_brightness(self):
         self.modified_image = self.original_image.copy()  
@@ -59,9 +79,20 @@ class AptLayout(Observer):
         self.modified_image.paste(room_adjusted, coordinate)
 
     # Method to toggle room states
-    def toggle_rooms_state(self, room_name, action):
-        self.model.toggle_rooms_state(room_name, action)
+    def toggle_rooms_state(self, room_name, action : str):
+        if room_name in self.room_coordinates:
+            current_state = self.room_states[room_name]
+
+        if action == "on" and not current_state:
+            self.room_states[room_name] = True
+            print(f"Turning on {room_name.capitalize()}")
+
+        elif action == "off" and current_state:
+            self.room_states[room_name] = False
+            print(f"Turning off {room_name.capitalize()}")
+    
         self.update_layout()
+        print(self.room_states)
 
     # Method to update the layout
     def update_layout(self):
@@ -83,7 +114,6 @@ class AptLayout(Observer):
         self.aptLayoutLabel.grid(row=1,column=1,sticky="E", padx=20, pady=50)
 
     # Method to update the observer
-    def notify(self):
-        self.model.notify()
-        self.update_layout()
+    def notify(self, event):
+        self.toggle_rooms_state(event.lamp, event.action.value)
         self.update_display()

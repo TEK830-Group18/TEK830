@@ -3,15 +3,16 @@ from typing import List
 import View.AptLayout as AptView
 from View.time_slider import TimeSlider
 from model.abstract_model import Model
-from model.abstract_timer import Timer
+from model.abstract_timer import ATimer
 from model.algorithm.abstract_mimicking_algorithm import MimickingAlgorithm
 from model.events.lamp_event import LampEvent
 from model.schedule import Schedule
 from datetime import datetime, time
+import time as t
 from model.events.lamp_action import LampAction
 
 class DemoModel(Model):
-    def __init__(self, scheduler : MimickingAlgorithm, timer: Timer):
+    def __init__(self, scheduler : MimickingAlgorithm, timer: ATimer):
         self.timer = timer
         self.scheduler = scheduler
         self.schedule = self.get_user_schedule()
@@ -44,21 +45,6 @@ class DemoModel(Model):
             "hall" : (95, 29, 127, 153)
         }
 
-
-    # Toggle room states
-    def toggle_rooms_state(self, room_name, action):
-        if room_name in self.room_coordinates:
-            current_state = self.room_states[room_name]
-
-            if action == LampAction.ON and not current_state:
-                self.room_states[room_name] = True
-                print(f"Turning on {room_name.capitalize()}")
-
-            elif action == LampAction.OFF and current_state:
-                self.room_states[room_name] = False
-                print(f"Turning off {room_name.capitalize()}")
-    
-
     # Method to check the events
     def check_events(self):
         current_time = time(self.current_hours, self.current_minutes)
@@ -89,17 +75,20 @@ class DemoModel(Model):
         self.timer.stop()
 
     def get_time(self):
-        self.timer.get_time()
+        return self.timer.get_time()
         
     def set_time(self, time):
-        time_int = time.timestamp.hour * 60 + time.timestamp.minute
+        time_int = time.hour * 60 + time.minute
         prev_active_lamps = self.currectly_active_lamps
         self.timer.set_time(time)
         self.currectly_active_lamps = self.active_lamps_list[time_int]
+        
         if prev_active_lamps != self.currectly_active_lamps:
             lamps_to_update = list(set(self.currectly_active_lamps) - set(prev_active_lamps))
+            print(f"{lamps_to_update}: are the ones t update")
             for lamp in lamps_to_update:
-                event = LampEvent(time,lamp,"ON")
+                event = LampEvent(time,lamp,LampAction.ON)
+                print(event)
                 self.publish(event)
 
     def add_observer(self, observer):
@@ -118,15 +107,20 @@ class DemoModel(Model):
 
     def mainloop(self):
         self.start()
-        # get time and compare with schedule, publish events when neccessary.
+        print("strated")
+        while True:
+            t.sleep(1)
+            print(self.get_time())
+            
 
     def get_schedule(self):
         raise NotImplementedError
 
     def get_user_schedule(self):
+        #TODO how to change scheduel
         user_data = "tools\mock_user_data.json"
         user_events = self.read_data(user_data)
-        user_schedule = self.scheduler.createSchedule(user_events)     
+        user_schedule = Schedule.createSchedule(user_events)     
         return user_schedule
     
     def create_active_lamp_list(self) -> List[List[str]]:
@@ -134,15 +128,17 @@ class DemoModel(Model):
         
         active_lamps = [[] for _ in range(1440)]
         
+        checked_lamps = []
+        
         for e in events:
             lamp_name = e.lamp
             for e2 in events:
                 event_timestamp = e2.timestamp.hour * 60 + e2.timestamp.minute
-                if e2.lamp == lamp_name:
+                if e2.lamp == lamp_name and not lamp_name not in checked_lamps :
                     for i in range(event_timestamp,1440):
-                        if e2.action == "ON":
+                        if e2.action.value == "on" and lamp_name not in active_lamps[i]:
                             active_lamps[i].append(lamp_name)
-                events.remove(e2)
+            checked_lamps.append(e.lamp)
                 
         return active_lamps
         
@@ -156,15 +152,3 @@ class DemoModel(Model):
                 event = LampEvent.from_json(e)
                 events.append(event)
         return events
-    
-    # Nah bruh
-    def notify(self):
-        self.current_hours = int(self.timeSlider.get_hours())
-        self.current_minutes = int(self.timeSlider.get_minutes())
-        self.current_time = time(self.current_hours, self.current_minutes)
-
-        if self.last_checked_minutes != self.current_minutes:
-            self.current_hours = self.current_hours
-            self.current_minutes = self.current_minutes
-            self.check_events()
-            self.last_checked_minutes = self.current_minutes
