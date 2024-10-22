@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from model.abstract_timer import Timer
+from model.abstract_timer import ATimer
 from model.abstract_event_publisher import EventPublisher
 from model.observable import Observable
 from model.schedule import Schedule
