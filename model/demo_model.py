@@ -146,10 +146,6 @@ class DemoModel(Model):
                 
         return active_lamps
         
-                
-        
-                        
-    
     def read_data(self, path:str):
         with open(path, mode='r') as f:
             json_data = json.load(f)
