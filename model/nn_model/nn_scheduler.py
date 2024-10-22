@@ -1,115 +1,3 @@
-# from datetime import datetime, timedelta
-# from sklearn.model_selection import train_test_split
-# from torch.utils.data import DataLoader, Subset
-# import torch
-# import torch.optim as optim
-# import torch.nn as nn
-# from torch.utils.data import Dataset
-# from typing import List
-# from model.events.lamp_action import LampAction
-# from model.events.lamp_event import LampEvent
-# from model.nn_model.nn_model import NNModel
-# from model.schedule import Schedule
-# from model.scheduler import Scheduler
-# from model.nn_model.lamp_event_dataset import LampEventDataset
-# from progressbar import progressbar
-
-# from model.nn_model.lstm_model import LSTMModel
-
-# class NNScheduler(Scheduler):
-#     def __init__(self):
-#         super().__init__()
-
-#     def createSchedule(self, user_actions: List[LampEvent]) -> Schedule:
-#         print("Preparing data...")
-#         dataset = LampEventDataset(user_actions)
-        
-#         train_indices, val_indices = train_test_split(list(range(len(dataset))), test_size=0.2, random_state=42)
-#         train_dataset = Subset(dataset, train_indices)
-#         val_dataset = Subset(dataset, val_indices)
-        
-#         print("Training model...")
-#         model = self.train_model(train_dataset)
-        
-#         # print("Evaluating model...")
-#         # self.evaluate_model(model, val_dataset)
-        
-#         print("Generating schedule...")
-#         return self.generate_24_hour_schedule(model, dataset)
-    
-#     def train_model(self, train_dataset: Dataset) -> LSTMModel:
-#         input_size = 2  # Example: time of day, lamp id
-#         hidden_size = 16
-#         num_layers = 2
-#         output_size = 2  # Example: ON/OFF actions
-#         num_epochs = 20
-#         learning_rate = 0.001
-        
-#         dataloader = DataLoader(train_dataset, batch_size=8, shuffle=True)
-#         model = LSTMModel(input_size, hidden_size, num_layers, output_size)
-#         optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-#         criterion = nn.CrossEntropyLoss()
-        
-#         progress = progressbar.ProgressBar(num_epochs)
-#         for epoch in progress(range(num_epochs)):
-#             for sequences, actions in dataloader:
-#                 sequences = sequences.unsqueeze(1)  
-#                 actions = actions.long().squeeze()
-                
-#                 outputs = model(sequences.float())
-#                 loss = criterion(outputs, actions)
-                
-#                 optimizer.zero_grad()
-#                 loss.backward()
-#                 optimizer.step()
-        
-#         return model
-
-#     def evaluate_model(self, model: LSTMModel, val_dataset: Dataset):
-#         dataloader = DataLoader(val_dataset, batch_size=32, shuffle=False)
-        
-#         total_correct = 0
-#         total_samples = 0
-        
-#         model.eval()
-#         with torch.no_grad():
-#             for sequences, actions in dataloader:
-#                 sequences = sequences.unsqueeze(1)  # Add batch dimension
-#                 actions = actions.long()
-                
-#                 outputs = model(sequences.float())
-#                 _, predicted = torch.max(outputs, 1)
-#                 total_correct += (predicted == actions).sum().item()
-#                 total_samples += actions.size(0)
-        
-#         accuracy = total_correct / total_samples
-#         print(f'Validation Accuracy: {accuracy:.4f}')
-        
-#     def generate_24_hour_schedule(self, model: LSTMModel, dataset: LampEventDataset) -> Schedule:
-#         model.eval()
-#         schedule_events = []
-        
-#         with torch.no_grad():
-#             for lamp_id in dataset.lamp_id_to_int.keys():
-#                 previous_action = None
-#                 for minute in range(1440):
-#                     time_of_day_tensor = torch.tensor([minute], dtype=torch.float32)
-#                     lamp_id_tensor = torch.tensor([dataset.lamp_id_to_int[lamp_id]], dtype=torch.float32)
-#                     sequence_tensor = torch.cat((time_of_day_tensor, lamp_id_tensor), dim=0).unsqueeze(0).unsqueeze(0)
-                    
-#                     outputs = model(sequence_tensor)
-#                     _, predicted_action = torch.max(outputs, 1)
-#                     item  = predicted_action.item()
-#                     action = LampAction.ON if item > 0.5 else LampAction.OFF
-                    
-#                     if previous_action is None or action != previous_action:
-#                         timestamp = datetime.today().replace(hour=minute // 60, minute=minute % 60, second=0, microsecond=0)
-#                         schedule_events.append(LampEvent(lamp=lamp_id, timestamp=timestamp, action=action))
-#                         previous_action = action
-#         schedule_events.sort(key=lambda x: x.timestamp.hour * 60 + x.timestamp.minute)
-#         return Schedule(events=schedule_events)
-
-
 from datetime import datetime, timedelta
 from typing import List
 
@@ -126,13 +14,17 @@ from progressbar import progressbar
 
 
 class NNScheduler(Scheduler):
+    DAY_SEGMENT_COUNT = 3
+    
     def __init__(self):
         super().__init__()
 
     def createSchedule(self, user_actions: List[LampEvent]) -> Schedule:
         # Prepare the data
         print('Formatting data...')
-        features, target, lamp_names = self.format_data(user_actions)
+        lamp_id_map = {lamp: i for i, lamp in enumerate(set(event.lamp for event in user_actions))}        
+        
+        features, target, lamp_names = self.format_data(user_actions, lamp_id_map)
         X_train, X_test, y_train, y_test = self.split_data(features, target)
         X_train_tensor, X_test_tensor, y_train_tensor, y_test_tensor = self.to_tensors(X_train, X_test, y_train, y_test)
 
@@ -142,7 +34,7 @@ class NNScheduler(Scheduler):
         model: NNModel = NNModel(input_size)
 
         # Loss function and optimizer
-        criterion = torch.nn.BCELoss()
+        criterion = torch.nn.MSELoss()
         optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
         # Train the model
@@ -150,36 +42,49 @@ class NNScheduler(Scheduler):
         self.train_model(model, X_train_tensor, y_train_tensor, criterion, optimizer, num_epochs=20)
 
         # Evaluate the model
-        print('Evaluating model...')
-        self.evaluate_model(model, X_test_tensor, y_test_tensor)
+        # print('Evaluating model...')
+        # self.evaluate_model(model, X_test_tensor, y_test_tensor)
 
         # Generate a 24-hour schedule
         print('Generating schedule...')
-        timestamps = self.generate_24_hour_minute_timestamps(datetime.now())
-        schedule = self.create_24_hour_schedule(lamp_names, timestamps, model, features.columns.tolist())
+        schedule = self.create_24_hour_schedule(model, lamp_names)
 
         return schedule
 
-    def format_data(self, user_actions: List[LampEvent]) -> tuple[DataFrame, Series, list[str]]:
-        # Add on or off event for every minute of the day
-        data = self.add_events_for_minutes(user_actions)
+    def format_data(self, user_actions: List[LampEvent], lamp_id_map: dict[str, int]) -> tuple[DataFrame, DataFrame, list[str]]:
+        # Generate timespans for each lamp event
+        data = self.generate_timespans(user_actions)
+        # Split the day into segments
+        data = self.split_day_to_segments(data, self.DAY_SEGMENT_COUNT) 
         
-        # Extract features from the data to prepare for converting to a DataFrame
-        data = self.extract_features(data)
-
         # Create a pandas DataFrame
         df = DataFrame(data)
+        print(df)
 
         # Get the unique lamp names
         original_lamp_names = df['lamp'].unique().tolist()
         
-        # One-hot encode the lamp field
-        df = pd.get_dummies(df, columns=['lamp'], prefix='lamp', dtype=float)
+        df['lamp'] = df['lamp'].map(lamp_id_map)
+        print(df)
 
-        features = df.drop('action', axis=1)
-        target = df['action']
-        print(features)
+        # Split features and target
+        features = df.drop(['start', 'length'], axis=1)
+        target = df[['start', 'length']]
+
         return features, target, original_lamp_names
+    
+    def split_day_to_segments(self, events: list[LampEvent], segment_count: int) -> list[LampEvent]:
+        split_events = []
+        segment_threshold = 1440 / segment_count
+        for event in events:
+            segment = int((event['start'].hour * 60 + event['start'].minute) // segment_threshold)
+            split_events.append({
+                'lamp': event['lamp'],
+                'start': event['start'].hour * 60 + event['start'].minute,
+                'length': event['length'],
+                'segment': segment,
+            })
+        return split_events
     
     def split_data(self, features: DataFrame, target: Series) -> tuple[DataFrame, DataFrame, Series, Series]:
         X_train, X_test, y_train, y_test = train_test_split(features, target, test_size=0.2, random_state=42)
@@ -192,94 +97,39 @@ class NNScheduler(Scheduler):
         y_test_tensor = torch.tensor(y_test.values, dtype=torch.float32).unsqueeze(1)  # Convert to (N, 1) shape
         return X_train_tensor, X_test_tensor, y_train_tensor, y_test_tensor
     
-    def add_events_for_minutes(self, events: List[LampEvent]):
-        events.sort(key=lambda x: x.timestamp.timestamp())
-        
-        # Split events into map of lamp name to list of events
-        lamp_events = {lamp: [] for lamp in set(event.lamp for event in events)}
-        for event in events:
-            lamp_events[event.lamp].append(event)
-            
-        # Create a map of lamp name to date to list of events
-        date_map: dict[str, dict[int, LampEvent]] = {}
-        for lamp, events in lamp_events.items():
-            if date_map.get(lamp) is None:
-                date_map[lamp] = {}
-            for event in events:
-                dt = event.timestamp.replace(hour=0, minute=0, second=0, microsecond=0)
-                if date_map[lamp].get(dt) is None:
-                    date_map[lamp][dt] = []
-                date_map[lamp][dt].append(event)
-             
-        # Create a list of events for every minute of the day   
-        data: list[LampEvent] = []
-        for lamp, date_events in date_map.items():
-            for date, events in date_events.items():
-                for i in range(1440):
-                    hour = i // 60
-                    minute = i % 60
-                    state = self.get_state_for_minute(events, hour, minute)
-                    data.append(LampEvent(date.replace(hour=hour, minute=minute), lamp, state))
-        return data
-       
-    def datetime_to_int(self, dt: datetime) -> int:
-        return 10000*dt.year + 100*dt.month + dt.day
-                
-    def get_state_for_minute(self, events: List[LampEvent], hour: int, minute: int) -> LampAction:
-        target_minute = hour * 60 + minute
-        closest_event = None
-        for event in events:
-            if event.timestamp.hour * 60 + event.timestamp.minute >= target_minute and (closest_event is None or event.timestamp < closest_event.timestamp):
-                closest_event = event
-        if closest_event is None:
-            return max(events, key=lambda x: x.timestamp).action
-        return closest_event.action
-            
-        # lo, hi = 0, len(events) - 1
-        # target_minute = hour * 60 + minute
-        # while lo < hi:
-        #     mid = (lo + hi) // 2
-        #     event_minute = events[mid].timestamp.hour * 60 + events[mid].timestamp.minute
-        #     if event_minute == target_minute:
-        #         break
-        #     elif event_minute < target_minute:
-        #         lo = mid + 1
-        #     else:
-        #         hi = mid
-        # return events[mid].action.value
-    
-    def extract_features(self, events: List[LampEvent]) -> List[dict]:
-        # Split events into map of lamp name to list of events
-        data = []
-        max = 1000
-        i = 0
-        for event in events:
-            # Extract timestamp features
-            hour = event.timestamp.hour
-            day_of_week = event.timestamp.weekday()
-            month = event.timestamp.month
-            is_weekend = 1 if day_of_week >= 5 else 0
-            
-            # Encode the action (on=1, off=0)
-            action = 1 if event.action == LampAction.ON else 0
-            
-            # Collect the data (you can extend this to include more features if necessary)
-            data.append({
-                'hour': hour,
-                'minute': event.timestamp.minute,
-                'day_of_week': day_of_week,
-                'month': month,
-                'is_weekend': is_weekend,
-                'lamp': event.lamp,
-                'action': action
-            })
-        return data
+    def generate_timespans(self, events: list[LampEvent]) -> list[dict]:
+        timespans = []
+        events.sort(key=lambda x: x.timestamp)
+        for i, event in enumerate(events):
+            if event.action == LampAction.ON:
+                lamp = event.lamp
+                start = event.timestamp
+                end = None
+                for j in range(i + 1, len(events)):
+                    if events[j].action == LampAction.OFF:
+                        end = events[j].timestamp
+                        break
+                timespans.append({'lamp': lamp, 'start': start, 'length': (end - start).total_seconds() // 60})
+        return timespans
     
     def train_model(self, model: NNModel, X_train: torch.Tensor, y_train: torch.Tensor, criterion, optimizer, num_epochs: int):
         for epoch in range(num_epochs):
             # Forward pass
-            outputs = model(X_train)
-            loss = criterion(outputs, y_train)
+            time_to_turn_on, duration = model(X_train.float())
+            
+            # Squeeze the extra dimension out of y_train
+            y_train = y_train.squeeze(1)
+            
+            # Ensure the target tensors are 1D
+            time_targets = y_train[:, 0].float()
+            duration_targets = y_train[:, 1].float()
+            
+            # Compute loss for each output
+            loss_time = criterion(time_to_turn_on, time_targets)
+            loss_duration = criterion(duration, duration_targets)
+            
+            # Combine losses
+            loss = loss_time + loss_duration
             
             # Backward pass and optimization
             optimizer.zero_grad()
@@ -297,58 +147,31 @@ class NNScheduler(Scheduler):
             accuracy = (test_outputs.eq(y_test_tensor).sum() / float(y_test_tensor.shape[0])).item()
             print(f'Accuracy on test data: {accuracy * 100:.2f}%')
 
-    def generate_24_hour_minute_timestamps(self, date: datetime):
-        timestamps = [date.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(minutes=i) for i in range(1440)]
-        return timestamps
-
-    def create_24_hour_schedule(self, lamp_names, timestamps, model, feature_columns) -> Schedule:
-        schedule = []
-        previous_action = None  # Initialize the previous action as None
-
-        for lamp in lamp_names:
-            for timestamp in timestamps:
-                # Extract features for the current timestamp and lamp
-                hour = timestamp.hour
-                minute = timestamp.minute
-                day_of_week = timestamp.weekday()
-                month = timestamp.month
-                is_weekend = 1 if day_of_week >= 5 else 0
-
-                # Create a DataFrame with the features
-                feature_data = {
-                    'hour': hour,
-                    'minute': minute,
-                    'day_of_week': day_of_week,
-                    'month': month,
-                    'is_weekend': is_weekend,
-                    'lamp': lamp
-                }
-                feature_df = DataFrame([feature_data])
-
-                # One-hot encode the lamp field
-                feature_df = pd.get_dummies(feature_df, columns=['lamp'], prefix='lamp', dtype=float)
-
-                # Ensure all feature columns are present
-                for col in feature_columns:
-                    if col not in feature_df.columns:
-                        feature_df[col] = 0.0
-
-                # Reorder columns to match the training data
-                feature_df = feature_df[feature_columns]
-
-                # Convert to tensor
-                input_tensor = torch.tensor(feature_df.values, dtype=torch.float32)
-
-                # Get the model prediction
-                prediction = model(input_tensor).item()
-
-                # Determine the action based on the prediction
-                action = LampAction.ON if prediction >= 0.5 else LampAction.OFF
-
-                # Append to schedule only if the action is different from the previous action
-                # if action != previous_action:
-                schedule.append(LampEvent(timestamp, lamp, action))
-                previous_action = action 
-        schedule.sort(key=lambda x: x.timestamp.hour * 60 + x.timestamp.minute)
-        return Schedule(events=schedule)
-    
+    def create_24_hour_schedule(self, model: NNModel, lamp_names: list[str]) -> Schedule:
+        model.eval()
+        schedule_events = []
+        
+        # lamp_id_to_int = {lamp: idx for idx, lamp in enumerate(df['lamp'].unique())}
+        lamp_id_to_int = {lamp: i for i, lamp in enumerate(lamp_names)}
+        
+        with torch.no_grad():
+            for lamp_id in lamp_id_to_int.keys():
+                for segment in range(self.DAY_SEGMENT_COUNT):
+                    time_of_day_tensor = torch.tensor([segment], dtype=torch.float32)
+                    lamp_id_tensor = torch.tensor([lamp_id_to_int[lamp_id]], dtype=torch.float32)
+                    sequence_tensor = torch.cat((time_of_day_tensor, lamp_id_tensor), dim=0).unsqueeze(0)
+                    print(f'sequence_tensor: {sequence_tensor.shape}')
+                    time_to_turn_on, duration = model(sequence_tensor)
+                    turn_on_minute = round(time_to_turn_on.item())
+                    duration_minutes = round(duration.item() * 1440)
+                    
+                    if duration_minutes > 30:
+                        on_timestamp = datetime.today().replace(hour=turn_on_minute // 60, minute=turn_on_minute % 60, second=0, microsecond=0)
+                        schedule_events.append(LampEvent(lamp=lamp_id, timestamp=on_timestamp, action=LampAction.ON))
+                        off_timestamp = on_timestamp + timedelta(minutes=duration_minutes)
+                        schedule_events.append(LampEvent(lamp=lamp_id, timestamp=off_timestamp, action=LampAction.OFF))
+        
+        schedule_events.sort(key=lambda x: x.timestamp)
+        for event in schedule_events:
+            print(event)
+        return Schedule(events=schedule_events)

@@ -26,5 +26,5 @@ class Model():
 
     def update_schedule(self, user_data: List[LampEvent], scheduler: Scheduler) -> Schedule:
         schedule = scheduler.createSchedule(user_data)
-        print(schedule)
+        # print(schedule)
         return schedule
