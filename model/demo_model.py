@@ -18,7 +18,7 @@ class DemoModel(Model):
         self.user_schedule = self.get_user_schedule()
         self.algortihm_schedule = self.get_schedule()
         
-        self.use_user_schedule = True
+        self.use_using_schedule = True
         self.current_schedule = self.user_schedule
         
         self.start_time = start_time
@@ -116,7 +116,7 @@ class DemoModel(Model):
         return time.hour * 60 + time.minute
 
     def get_schedule(self):
-        user_data = "tools\mock_user_data.json"
+        user_data = "tools\mock_user_data copy.json"
         user_events = self.read_data(user_data)
         return self.scheduler.createSchedule(user_events)
     
@@ -124,7 +124,6 @@ class DemoModel(Model):
         return self.currently_active_lamps
 
     def get_user_schedule(self):
-        #TODO how to change schedule
         user_data = "tools\mock_user_data.json"
         user_events = self.read_data(user_data)
         user_schedule = Schedule.createSchedule(user_events)     
@@ -158,12 +157,14 @@ class DemoModel(Model):
         prev_active_lamps_list = self.active_lamps_list
         current_time_in_minutes = self._get_minutes_from_datetime(self.get_time())
 
-        if self.use_user_schedule:
+        if not self.use_using_schedule:
             self.current_schedule = self.user_schedule
             self.publish_events_after_schedule_switch(current_time_in_minutes, prev_active_lamps_list)
+            self.use_using_schedule = True
         else:
             self.current_schedule = self.algortihm_schedule
             self.publish_events_after_schedule_switch(current_time_in_minutes, prev_active_lamps_list)
+            self.use_using_schedule = False
 
 
     def publish_events_after_schedule_switch(self, current_time_in_minutes, prev_active_lamps_list):

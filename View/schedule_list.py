@@ -70,6 +70,8 @@ class ScheduleList(ctk.CTkFrame, Observer):
     def update_list(self):
         """Should update the list in the list box with new entries from a schedule
         """
+        for widget in self._list_frame.winfo_children():
+            widget.destroy()
         self.schedule = self.model.get_current_schedule()
         self._build_list()
     
