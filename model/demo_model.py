@@ -82,7 +82,6 @@ class DemoModel(Model):
 
     def mainloop(self):
         self.start()
-        # TODO makes the whole program run like shit
         while True:
             t.sleep(1)
             self.current_time = self.get_time()
@@ -146,6 +145,9 @@ class DemoModel(Model):
             checked_lamps.append(e.lamp)
                 
         return active_lamps
+    
+    def change_current_schedule(self):
+        pass
         
     def read_data(self, path:str):
         with open(path, mode='r') as f:
