@@ -81,7 +81,7 @@ class DemoModel(Model):
         for lamp in self.currently_active_lamps:
             self.publish(LampEvent(self.current_time,lamp,LampAction.ON))
 
-    def remove_observer(self, observer):
+    def remove_observer(self, observer: EventObserver):
         self.observers.remove(observer)
 
     def mainloop(self):
