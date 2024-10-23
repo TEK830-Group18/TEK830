@@ -181,8 +181,6 @@ class DemoModel(Model):
 
     def publish_events_after_schedule_switch(self, current_time_in_minutes, prev_current_active_lamps_list):
         new_current_active_lamps_list = self.create_active_lamp_list()
-        print(len(new_current_active_lamps_list[current_time_in_minutes]) == 0)
-        print(prev_current_active_lamps_list[current_time_in_minutes])
         
         if len(new_current_active_lamps_list[current_time_in_minutes]) == 0:
             for lamp in prev_current_active_lamps_list[current_time_in_minutes]:
