@@ -155,9 +155,9 @@ class DemoModel(Model):
                 event_timestamp = e2.timestamp.hour * 60 + e2.timestamp.minute
                 if e2.lamp == lamp_name and not lamp_name not in checked_lamps:
                     for i in range(event_timestamp,1440):
-                        if e2.action.value == "on" and lamp_name not in active_lamps[i]:
+                        if e2.action.value == LampAction.ON.value and lamp_name not in active_lamps[i]:
                             active_lamps[i].append(lamp_name)
-                        if e2.action.value == "off" and lamp_name in active_lamps[i]:
+                        if e2.action.value == LampAction.OFF.value and lamp_name in active_lamps[i]:
                             active_lamps[i].remove(lamp_name)
             checked_lamps.append(e.lamp)
                 
