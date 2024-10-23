@@ -52,7 +52,7 @@ class AptLayout(EventObserver):
             self.apply_all_brightness(room)
         self.update_display()
     
-    # Method to apply darkness or brightneess to the room
+    # Method to apply darkness or brightness to the room
     def darken_rooms(self, room_name):
         if room_name in self.room_coordinates:
             coordinate = self.room_coordinates[room_name]
