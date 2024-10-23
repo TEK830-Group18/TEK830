@@ -1,7 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk, ImageEnhance
 from model.abstract_event_observer import EventObserver
-from model.observer import Observer
 import model.demo_model as demo_model
 import os
 
