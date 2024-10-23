@@ -12,15 +12,14 @@ class ClockWidget(ctk.CTkFrame):
         self.model = model
         
         self._timer_on: bool = False 
+                
+        self._hours = self.model.get_time().hour
+        self._minutes = self.model.get_time().minute
+        self._seconds = self.model.get_time().second
         
-        self._time = 0 
+        # Set current time as starting value on the model, formatted 
+        self._displayed_time = self._format_time(self._hours,self._minutes,self._seconds)
         
-        # Set current time as starting value on the controller, formatted 
-        self._displayed_time = self._format_time(0,0,0)
-        
-        self._hours = 0
-        self._minutes = 0
-        self._seconds = 0
 
         # Configure row and column
         self.grid(row=2, column=1, columnspan=2)
@@ -66,7 +65,6 @@ class ClockWidget(ctk.CTkFrame):
             self.update_time()
     
     def update_time(self):
-        self._time = self.get_time_as_minutes()
         self._hours = self.model.get_time().hour
         self._minutes = self.model.get_time().minute
         self._seconds = self.model.get_time().second

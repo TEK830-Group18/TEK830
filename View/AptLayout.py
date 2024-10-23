@@ -85,14 +85,11 @@ class AptLayout(EventObserver):
 
         if action == "on" and not current_state:
             self.room_states[room_name] = True
-            print(f"Turning on {room_name.capitalize()}")
 
         elif action == "off" and current_state:
             self.room_states[room_name] = False
-            print(f"Turning off {room_name.capitalize()}")
     
         self.update_layout()
-        print(self.room_states)
 
     # Method to update the layout
     def update_layout(self):

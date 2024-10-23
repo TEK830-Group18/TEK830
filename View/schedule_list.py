@@ -3,11 +3,12 @@ import customtkinter as ctk
 
 from View.activation_button import ActivationButton
 from View.colors import Colors
+from model.abstract_model import Model
 from model.observer import Observer
 from View.schedule_list_element import ScheduleListElement
 
 class ScheduleList(ctk.CTkFrame, Observer):
-    def __init__(self, master, controller : ActivationButton):
+    def __init__(self, master, controller : ActivationButton, model : Model):
         super().__init__(master)
         self._width = 150
         self._height = 230

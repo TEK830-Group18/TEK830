@@ -15,9 +15,9 @@ import threading
 from model.timer import Timer
 
 class Application:
-    def __init__(self, model):
+    def __init__(self, model, start_time : datetime):
         self.model = model
-        self.model.set_time(datetime.now().replace(hour=0,minute=0,second=0))
+        self.model.set_time(start_time)
         self.app = AppFrame()
         self.setup_ui()
 
@@ -45,10 +45,11 @@ class Application:
     
         
 if __name__ == "__main__":
+    start_time = datetime.now().replace(hour=6,minute=54,second=30)
     timer = Timer()
     schduler = MoreOftenThanNotMAlg()
-    model = DemoModel(schduler, timer)
-    app = Application(model)
+    model = DemoModel(schduler, timer, start_time)
+    app = Application(model, start_time)
     # view_thread: threading.Thread = threading.Thread(target=app.run_ui)
     model_thread: threading.Thread = threading.Thread(target=app.run_model)
     

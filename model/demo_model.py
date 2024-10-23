@@ -7,71 +7,33 @@ from model.abstract_timer import ATimer
 from model.algorithm.abstract_mimicking_algorithm import MimickingAlgorithm
 from model.events.lamp_event import LampEvent
 from model.schedule import Schedule
-from datetime import datetime, time
+from datetime import datetime
 import time as t
 from model.events.lamp_action import LampAction
 
 class DemoModel(Model):
-    def __init__(self, scheduler : MimickingAlgorithm, timer: ATimer):
+    def __init__(self, scheduler : MimickingAlgorithm, timer: ATimer, start_time : datetime):
         self.timer = timer
         self.scheduler = scheduler
         self.schedule = self.get_user_schedule()
-        self.active_lamps_list = self.create_active_lamp_list()
-        self.currently_active_lamps = []
-        self.last_checked_minutes = None
-        self.current_hours = 0
-        self.current_minutes = 0
-        self.current_time = datetime.now().replace(hour=0,minute=0,second=0)
+        self.start_time = start_time
+        self.current_hours = self.start_time.hour
+        self.current_minutes = self.start_time.minute
+        self.current_time = self.start_time
+        self.prev_time = self.start_time
         self.observers = []
-        self.prev_time = datetime.now().replace(hour=0,minute=0,second=0)
 
-        self.room_states = {
-            "bedroom" : False,
-            "livingroom" : False,
-            "kitchen" : False,
-            "bathroom" : False,
-            "hall" : False
-        }
-
-        self.processed_events = set()
-
-        self.DARKNESSINTENSITY = 0.5
-        self.BRIGHTNESSINTENSITY = 1.0
-
-        # Coordinate for rooms in the layout
-        self.room_coordinates = {
-            "bedroom" : (128, 29, 192, 153),
-            "livingroom" : (90, 158, 192, 309),
-            "kitchen" : (26, 158, 90, 309),
-            "bathroom" : (26, 29, 90, 153),
-            "hall" : (95, 29, 127, 153)
-        }
-
-    # Method to check the events
-    def check_events(self):
-        current_time = time(self.current_hours, self.current_minutes)
-
-        for event in self.schedule.events:
-            event_time = event.timestamp.time()
-            
-            if self.time_within_tolerance(current_time, event_time):
-                self.toggle_rooms_state(event.lamp, event.action)
-                self.processed_events.add(event_time)
-    
-    # Method to check if the current time is within the tolerance
-    def time_within_tolerance(self, current_time : time, event_time : time, tolerance_minutes = 1):
-        current_total_minutes = current_time.hour * 60 + current_time.minute
-        event_total_minutes = event_time.hour * 60 + event_time.minute
-        time_diff = abs(current_total_minutes - event_total_minutes)
-
-        if time_diff > 720:
-            time_diff = 1440 - time_diff
+        self.current_time_in_minutes = self.current_time.hour * 60 + self.current_time.minute
+        self.active_lamps_list = self.create_active_lamp_list()
+        print(self.active_lamps_list[415])
+        self.currently_active_lamps = self.active_lamps_list[self.current_time_in_minutes]
         
-        return time_diff <= tolerance_minutes
+        for lamp in self.currently_active_lamps:
+            self.publish_lamp_event(self.current_time,lamp,LampAction.ON)
 
     def start(self):
         self.timer.start()
-        self.timer.set_time(datetime.now().replace(hour=0,minute=0,second=0))
+        self.timer.set_time(self.start_time)
 
     def stop(self):
         self.timer.stop()
@@ -79,34 +41,37 @@ class DemoModel(Model):
     def get_time(self):
         return self.timer.get_time()
         
-    def set_time(self, time):
-        time_int = time.hour * 60 + time.minute
+    def set_time(self, time : datetime):
+        time_int = self._get_minutes_from_datetime(time)
         prev_active_lamps = self.currently_active_lamps
         self.timer.set_time(time)
         self.currently_active_lamps = self.active_lamps_list[time_int]
         
-        if prev_active_lamps != self.currently_active_lamps:
-            # if statement to see if user jumped forwards or backwards in time
-            if self.prev_time <= time:
-                lamps_to_update = list(set(self.currently_active_lamps) - set(prev_active_lamps))
-                for lamp in lamps_to_update:
-                    # if lamp from the difference is in the active lamps list, turn it on and vice verca
-                    if lamp in self.currently_active_lamps:
-                        self.publish_lamp_event(time,lamp,LampAction.ON)
-                    else:
-                        self.publish_lamp_event(time,lamp,LampAction.OFF)
-            else:
-                lamps_to_update = list(set(prev_active_lamps) - set(self.currently_active_lamps))
-                for lamp in lamps_to_update:
-                    if lamp not in self.currently_active_lamps:
-                        self.publish_lamp_event(time,lamp,LampAction.OFF)
-                    else:
-                        self.publish_lamp_event(time,lamp,LampAction.ON)
+        if len(self.currently_active_lamps) == 0:
+            for lamp in prev_active_lamps:
+                self.publish_lamp_event(time,lamp,LampAction.OFF)
+        else: 
+            if prev_active_lamps != self.currently_active_lamps:
+                # if statement to see if user jumped forwards or backwards in time
+                # if self.prev_time <= time:
+                    lamps_to_update = list(set(self.currently_active_lamps).symmetric_difference(set(prev_active_lamps)))
+                    for lamp in lamps_to_update:
+                        # if lamp from the difference is in the active lamps list, turn it on and vice verca
+                        if lamp in prev_active_lamps:
+                            self.publish_lamp_event(time,lamp,LampAction.OFF)
+                        else:
+                            self.publish_lamp_event(time,lamp,LampAction.ON)
+                # else:
+                    # lamps_to_update = list(set(self.currently_active_lamps).symmetric_difference(set(prev_active_lamps)))
+                    # for lamp in lamps_to_update:
+                    #     if lamp in prev_active_lamps:
+                    #         self.publish_lamp_event(time,lamp,LampAction.OFF)
+                    #     else:
+                    #         self.publish_lamp_event(time,lamp,LampAction.ON)
         self.prev_time = time
         
     def publish_lamp_event(self, time : datetime, lamp_name : str, action : LampAction):
         event = LampEvent(time,lamp_name,action)
-        print(f"Lamp {lamp_name} is {action.value}")
         self.publish(event)
 
     def publish(self, event):
@@ -115,6 +80,8 @@ class DemoModel(Model):
 
     def add_observer(self, observer):
         self.observers.append(observer)
+        for lamp in self.currently_active_lamps:
+            self.publish(LampEvent(self.current_time,lamp,LampAction.ON))
 
     def remove_observer(self, observer):
         self.observers.remove(observer)
@@ -124,15 +91,41 @@ class DemoModel(Model):
 
     def mainloop(self):
         self.start()
-        # self.current_time = self.get_time()
-        # lamps_to_update = []
-        # while True:
-        #     if self.current_time.minute > self.prev_time.minute and self.currently_active_lamps != self.active_lamps_list[self.current_time.minute]:
-        #         if self.self.currently_active_lamps > self.active_lamps_list[self.current_time.minute]:
-        #             lamps_to_update = list(set(self.currently_active_lamps) - set(self.active_lamps_list[self.current_time.minute]))
+        #TODO shit dont work
+        while True:
+            self.current_time = self.get_time()
+            current_time_in_minutes = self._get_minutes_from_datetime(self.current_time)
+            self.currently_active_lamps = self.active_lamps_list[current_time_in_minutes]
+            
+            prev_time_in_minutes = self._get_minutes_from_datetime(self.prev_time)
+            prev_active_lamps = self.active_lamps_list[prev_time_in_minutes]
+            
+            lamps_to_update = []
+            if self.current_time.minute > self.prev_time.minute and prev_active_lamps != self.currently_active_lamps:
+                
+                lamps_to_update = list(set(prev_active_lamps).symmetric_difference(set(self.active_lamps_list[current_time_in_minutes])))
+                print(F"{lamps_to_update} are to be updated")
+                
+                if len(lamps_to_update) == 0:
+                    for lamp in prev_active_lamps:
+                        self.publish_lamp_event(self.current_time,lamp,LampAction.OFF)
+                        
+                for lamp in lamps_to_update:
+                    # If lamp was part of active lamps then it should turn off, else on
+                    if lamp in prev_active_lamps:
+                        self.publish_lamp_event(self.current_time,lamp,LampAction.OFF)
+                    else:
+                        self.publish_lamp_event(self.current_time,lamp,LampAction.ON)
+                self.prev_time = self.current_time
+
+    def _get_minutes_from_datetime(self, time : datetime):
+        return time.hour * 60 + time.minute
 
     def get_schedule(self):
         raise NotImplementedError
+    
+    def get_current_active_lights(self):
+        return self.currently_active_lamps
 
     def get_user_schedule(self):
         #TODO how to change schedule
@@ -152,10 +145,12 @@ class DemoModel(Model):
             lamp_name = e.lamp
             for e2 in events:
                 event_timestamp = e2.timestamp.hour * 60 + e2.timestamp.minute
-                if e2.lamp == lamp_name and not lamp_name not in checked_lamps :
+                if e2.lamp == lamp_name and not lamp_name not in checked_lamps:
                     for i in range(event_timestamp,1440):
                         if e2.action.value == "on" and lamp_name not in active_lamps[i]:
                             active_lamps[i].append(lamp_name)
+                        if e2.action.value == "off" and lamp_name in active_lamps[i]:
+                            active_lamps[i].remove(lamp_name)
             checked_lamps.append(e.lamp)
                 
         return active_lamps

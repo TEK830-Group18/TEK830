@@ -14,9 +14,9 @@ class TimeSlider(ctk.CTkFrame):
         
         self.updating: bool = False
         
-        self._seconds:int = 0
-        self._minute:int = 0
-        self._hour:int = 0
+        self._seconds:int = self.model.get_time().second
+        self._minute:int = self.model.get_time().minute
+        self._hour:int = self.model.get_time().hour
         self.configure(fg_color=Colors.IKEA_BLUE.value)
         
         # init slider
@@ -32,7 +32,8 @@ class TimeSlider(ctk.CTkFrame):
                                      progress_color="light gray"
                                      )
         self._slider.configure(command=self._update_time_in_model)
-        self._slider.set(0)
+        self._start_value = self.model.get_time().hour*60 + self.model.get_time().minute
+        self._slider.set(self._start_value)
         self._slider.grid(row=4, column=1, columnspan=2)
     
     def _update_time_in_model(self, a):
