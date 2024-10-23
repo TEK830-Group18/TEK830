@@ -70,4 +70,4 @@ class ClockWidget(ctk.CTkFrame):
         self._seconds = self.model.get_time().second
         self._displayed_time = self._format_time(self._hours, self._minutes, self._seconds)
         self._time_label.configure(text = self._displayed_time)
-        self.after(1000, self.update_time)
+        self.after(50, self.update_time)

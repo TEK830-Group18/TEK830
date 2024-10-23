@@ -49,4 +49,4 @@ class ActivationButton(ctk.CTkFrame, Observable):
         
     def notify_observers(self) -> None:
         for ob in self._obeservers:
-            ob.notified_update()
+            ob.notify()

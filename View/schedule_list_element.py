@@ -11,7 +11,7 @@ class ScheduleListElement(ctk.CTkFrame):
     def __init__(self, master, lamp_name : str, time_stamp : datetime, action: str):
         super().__init__(master)
         
-        self.text = f"{lamp_name} will turn {action.capitalize()} \n at {time_stamp.time()}"
+        self.text = f"{lamp_name.capitalize()} will turn {action.upper()} \n at {time_stamp.time()}"
         
         self._lbl = ctk.CTkLabel(self,
                                  text = self.text,
