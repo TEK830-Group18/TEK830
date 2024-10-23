@@ -28,14 +28,11 @@ class TimeSlider(ctk.CTkFrame):
                                      button_hover_color="dark gray",
                                      progress_color="light gray"
                                      )
-        self._slider.configure(command=self._update_time_in_model)
+        self._slider.configure(command=self.set_time)
         self._start_value = self.model.get_time().hour*60 + self.model.get_time().minute
         self._slider.set(self._start_value)
         self._slider.grid(row=4, column=1, columnspan=2)
             
-    def _update_time_in_model(self, a):
-        self.set_time()
-    
     def get_slider_value(self) -> int:
         return self._slider.get().as_integer_ratio()[0]
     
@@ -51,7 +48,7 @@ class TimeSlider(ctk.CTkFrame):
     def get_minutes(self):
         return self.get_slider_value() % 60
             
-    def set_time(self):
+    def set_time(self, a):
         time = datetime.now().replace(hour=self.get_hours(),minute=self.get_minutes(),second=0)
         self.model.set_time(time)
     
