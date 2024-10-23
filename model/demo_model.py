@@ -169,12 +169,10 @@ class DemoModel(Model):
         current_time_in_minutes = self._get_minutes_from_datetime(self.get_time())
 
         if not self.use_using_schedule:
-            print("use user schedule")
             self.current_schedule = self.user_schedule
             self.publish_events_after_schedule_switch(current_time_in_minutes, self.prev_current_active_lamps_list)
             self.use_using_schedule = True
         else:
-            print("use algorithm schedule")
             self.current_schedule = self.algortihm_schedule
             self.publish_events_after_schedule_switch(current_time_in_minutes, self.prev_current_active_lamps_list)
             self.use_using_schedule = False
