@@ -7,7 +7,7 @@ from View.AptLayout import AptLayout as Apt
 from model.model import Model
 from model.algorithm.random_malg import RandomMAlg
 from model.algorithm.abstract_mimicking_algorithm import Schedule
-from model.demo_model import demo_model
+from model.demo_model import DemoModel as demo_model
 import threading
 
 class Application:
