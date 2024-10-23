@@ -1,4 +1,5 @@
 import json
+import os
 from typing import List
 from model.abstract_event_observer import EventObserver
 from model.abstract_model import Model
@@ -12,6 +13,7 @@ from model.events.lamp_action import LampAction
 
 class DemoModel(Model):
     def __init__(self, scheduler : MimickingAlgorithm, timer: ATimer, start_time : datetime):
+        self.mock_data_path = self._create_mock_data_path_string("tools","mock_user_data.json")
         self.timer = timer
         self.scheduler = scheduler
         self.user_schedule = self.get_user_schedule()
@@ -25,8 +27,7 @@ class DemoModel(Model):
         self.current_minutes = self.start_time.minute
         self.current_time = self.start_time
         self.prev_time = self.start_time
-        self.observers = List[EventObserver]
-
+        self.observers : List[EventObserver] = []
         self.current_time_in_minutes = self.current_time.hour * 60 + self.current_time.minute
             
         self.current_active_lamps_list = self.create_active_lamp_list()
@@ -36,6 +37,11 @@ class DemoModel(Model):
         # to turn on lamps that should be turned on, if given a start time that means that lights should be on
         for lamp in self.currently_active_lamps:
             self.publish_lamp_event(self.current_time,lamp,LampAction.ON)
+    
+    def _create_mock_data_path_string(self, dir : str, filename : str) -> str:
+        data_dir = os.path.join(dir)
+        path = os.path.join(data_dir, filename)
+        return path
 
     def start(self):
         self.timer.start()
@@ -116,8 +122,7 @@ class DemoModel(Model):
         return time.hour * 60 + time.minute
 
     def get_schedule(self):
-        user_data = "tools\mock_user_data.json"
-        user_events = self.read_data(user_data)
+        user_events = self.read_data(self.mock_data_path)
         return self.scheduler.createSchedule(user_events)
     
     def get_current_active_lights(self):
@@ -126,8 +131,7 @@ class DemoModel(Model):
     def get_user_schedule(self):
         """Get user data from a single day.
         """
-        user_data = "tools\mock_user_data.json"
-        user_events = self.read_data(user_data)
+        user_events = self.read_data(self.mock_data_path)
         date_schedule_is_based_on = user_events[0].timestamp.date()
         day_specific_events = []
         for events in user_events:
