@@ -25,7 +25,7 @@ class DemoModel(Model):
         self.current_minutes = self.start_time.minute
         self.current_time = self.start_time
         self.prev_time = self.start_time
-        self.observers = []
+        self.observers = List[EventObserver]
 
         self.current_time_in_minutes = self.current_time.hour * 60 + self.current_time.minute
             
@@ -75,7 +75,7 @@ class DemoModel(Model):
         for o in self.observers:
             o.notify(event)
 
-    def add_observer(self, observer):
+    def add_observer(self, observer : EventObserver):
         self.observers.append(observer)
         for lamp in self.currently_active_lamps:
             self.publish(LampEvent(self.current_time,lamp,LampAction.ON))
