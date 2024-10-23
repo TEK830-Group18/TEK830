@@ -34,7 +34,6 @@ class DemoModel(Model):
         self.currently_active_lamps = self.current_active_lamps_list[self.current_time_in_minutes]
         self.prev_current_active_lamps_list = self.current_active_lamps_list
 
-        
         # to turn on lamps that should be turned on, if given a start time that means that lights should be on
         for lamp in self.currently_active_lamps:
             self.publish_lamp_event(self.current_time,lamp,LampAction.ON)
