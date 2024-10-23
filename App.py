@@ -36,6 +36,7 @@ class Application:
         apt = Apt(self.app, self.model)
         
         model.add_observer(apt)
+        #TODO add mqtt_light_service as observer of model
         
     def run_model(self):
         self.model.mainloop()
