@@ -83,31 +83,32 @@ class DemoModel(Model):
     def mainloop(self):
         self.start()
         # TODO makes the whole program run like shit
-        # while True:
-        #     self.current_time = self.get_time()
-        #     current_time_in_minutes = self._get_minutes_from_datetime(self.current_time)
-        #     self.currently_active_lamps = self.active_lamps_list[current_time_in_minutes]
+        while True:
+            t.sleep(1)
+            self.current_time = self.get_time()
+            current_time_in_minutes = self._get_minutes_from_datetime(self.current_time)
+            self.currently_active_lamps = self.active_lamps_list[current_time_in_minutes]
             
-        #     prev_time_in_minutes = self._get_minutes_from_datetime(self.prev_time)
-        #     prev_active_lamps = self.active_lamps_list[prev_time_in_minutes]
+            prev_time_in_minutes = self._get_minutes_from_datetime(self.prev_time)
+            prev_active_lamps = self.active_lamps_list[prev_time_in_minutes]
             
-        #     lamps_to_update = []
-        #     if self.current_time.minute > self.prev_time.minute and prev_active_lamps != self.currently_active_lamps:
+            lamps_to_update = []
+            if self.current_time.minute > self.prev_time.minute and prev_active_lamps != self.currently_active_lamps:
                 
-        #         lamps_to_update = list(set(prev_active_lamps).symmetric_difference(set(self.active_lamps_list[current_time_in_minutes])))
-        #         print(F"{lamps_to_update} are to be updated")
+                lamps_to_update = list(set(prev_active_lamps).symmetric_difference(set(self.active_lamps_list[current_time_in_minutes])))
+                print(F"{lamps_to_update} are to be updated")
                 
-        #         if len(lamps_to_update) == 0:
-        #             for lamp in prev_active_lamps:
-        #                 self.publish_lamp_event(self.current_time,lamp,LampAction.OFF)
+                if len(lamps_to_update) == 0:
+                    for lamp in prev_active_lamps:
+                        self.publish_lamp_event(self.current_time,lamp,LampAction.OFF)
                         
-        #         for lamp in lamps_to_update:
-        #             # If lamp was part of active lamps then it should turn off, else on
-        #             if lamp in prev_active_lamps:
-        #                 self.publish_lamp_event(self.current_time,lamp,LampAction.OFF)
-        #             else:
-        #                 self.publish_lamp_event(self.current_time,lamp,LampAction.ON)
-        #         self.prev_time = self.current_time
+                for lamp in lamps_to_update:
+                    # If lamp was part of active lamps then it should turn off, else on
+                    if lamp in prev_active_lamps:
+                        self.publish_lamp_event(self.current_time,lamp,LampAction.OFF)
+                    else:
+                        self.publish_lamp_event(self.current_time,lamp,LampAction.ON)
+                self.prev_time = self.current_time
 
     def _get_minutes_from_datetime(self, time : datetime):
         return time.hour * 60 + time.minute
