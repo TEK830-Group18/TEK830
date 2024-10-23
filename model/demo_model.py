@@ -25,7 +25,6 @@ class DemoModel(Model):
 
         self.current_time_in_minutes = self.current_time.hour * 60 + self.current_time.minute
         self.active_lamps_list = self.create_active_lamp_list()
-        print(self.active_lamps_list[415])
         self.currently_active_lamps = self.active_lamps_list[self.current_time_in_minutes]
         
         # to turn on lamps that should be turned on, if given a start time that means that lights should be on
