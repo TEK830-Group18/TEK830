@@ -17,11 +17,13 @@ class DemoModel(Model):
         self.scheduler = scheduler
         self.schedule = self.get_user_schedule()
         self.active_lamps_list = self.create_active_lamp_list()
-        self.currectly_active_lamps = []
+        self.currently_active_lamps = []
         self.last_checked_minutes = None
         self.current_hours = 0
         self.current_minutes = 0
+        self.current_time = datetime.now().replace(hour=0,minute=0,second=0)
         self.observers = []
+        self.prev_time = datetime.now().replace(hour=0,minute=0,second=0)
 
         self.room_states = {
             "bedroom" : False,
@@ -79,16 +81,37 @@ class DemoModel(Model):
         
     def set_time(self, time):
         time_int = time.hour * 60 + time.minute
-        prev_active_lamps = self.currectly_active_lamps
+        prev_active_lamps = self.currently_active_lamps
         self.timer.set_time(time)
-        self.currectly_active_lamps = self.active_lamps_list[time_int]
+        self.currently_active_lamps = self.active_lamps_list[time_int]
         
-        if prev_active_lamps != self.currectly_active_lamps:
-            lamps_to_update = list(set(self.currectly_active_lamps) - set(prev_active_lamps))
-            for lamp in lamps_to_update:
-                event = LampEvent(time,lamp,LampAction.ON)
-                print(event)
-                self.publish(event)
+        if prev_active_lamps != self.currently_active_lamps:
+            # if statement to see if user jumped forwards or backwards in time
+            if self.prev_time <= time:
+                lamps_to_update = list(set(self.currently_active_lamps) - set(prev_active_lamps))
+                for lamp in lamps_to_update:
+                    # if lamp from the difference is in the active lamps list, turn it on and vice verca
+                    if lamp in self.currently_active_lamps:
+                        self.publish_lamp_event(time,lamp,LampAction.ON)
+                    else:
+                        self.publish_lamp_event(time,lamp,LampAction.OFF)
+            else:
+                lamps_to_update = list(set(prev_active_lamps) - set(self.currently_active_lamps))
+                for lamp in lamps_to_update:
+                    if lamp not in self.currently_active_lamps:
+                        self.publish_lamp_event(time,lamp,LampAction.OFF)
+                    else:
+                        self.publish_lamp_event(time,lamp,LampAction.ON)
+        self.prev_time = time
+        
+    def publish_lamp_event(self, time : datetime, lamp_name : str, action : LampAction):
+        event = LampEvent(time,lamp_name,action)
+        print(f"Lamp {lamp_name} is {action.value}")
+        self.publish(event)
+
+    def publish(self, event):
+        for o in self.observers:
+            o.notify(event)
 
     def add_observer(self, observer):
         self.observers.append(observer)
@@ -99,19 +122,20 @@ class DemoModel(Model):
     def notify_observers(self):
         raise NotImplementedError
 
-    def publish(self, event):
-        # when events published, notify observers
-        for o in self.observers:
-            o.notify(event)
-
     def mainloop(self):
         self.start()
+        # self.current_time = self.get_time()
+        # lamps_to_update = []
+        # while True:
+        #     if self.current_time.minute > self.prev_time.minute and self.currently_active_lamps != self.active_lamps_list[self.current_time.minute]:
+        #         if self.self.currently_active_lamps > self.active_lamps_list[self.current_time.minute]:
+        #             lamps_to_update = list(set(self.currently_active_lamps) - set(self.active_lamps_list[self.current_time.minute]))
 
     def get_schedule(self):
         raise NotImplementedError
 
     def get_user_schedule(self):
-        #TODO how to change scheduel
+        #TODO how to change schedule
         user_data = "tools\mock_user_data.json"
         user_events = self.read_data(user_data)
         user_schedule = Schedule.createSchedule(user_events)     

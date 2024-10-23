@@ -50,25 +50,25 @@ class AptLayout(EventObserver):
     # Method to make all the room dark initially
     def update_initial_brightness(self):
         self.modified_image = self.original_image.copy()  
-        for room in self.model.room_states:  
+        for room in self.room_states:  
             self.apply_all_brightness(room)
         self.update_display()
     
     # Method to apply darkness or brightneess to the room
     def darken_rooms(self, room_name):
-        if room_name in self.model.room_coordinates:
-            coordinate = self.model.room_coordinates[room_name]
+        if room_name in self.room_coordinates:
+            coordinate = self.room_coordinates[room_name]
             room_image = self.original_image.crop(coordinate)
-            room_dark = ImageEnhance.Brightness(room_image).enhance(self.model.DARKNESSINTENSITY)
+            room_dark = ImageEnhance.Brightness(room_image).enhance(self.DARKNESSINTENSITY)
             self.modified_image.paste(room_dark, coordinate)
 
     # Method to apply brightness to the room
     def apply_all_brightness(self, room_name):
-        if room_name in self.model.room_coordinates:
-            coordinate = self.model.room_coordinates[room_name]
+        if room_name in self.room_coordinates:
+            coordinate = self.room_coordinates[room_name]
             brightness = (
-                self.model.BRIGHTNESSINTENSITY if self.model.room_states[room_name]
-                else self.model.DARKNESSINTENSITY
+                self.BRIGHTNESSINTENSITY if self.room_states[room_name]
+                else self.DARKNESSINTENSITY
             )
             self.adjust_room_brightness(coordinate, brightness)
 
@@ -97,7 +97,7 @@ class AptLayout(EventObserver):
     # Method to update the layout
     def update_layout(self):
         self.modified_image = self.original_image.copy()
-        for room in self.model.room_states:
+        for room in self.room_states:
             self.apply_all_brightness(room)
         self.update_display()
 
