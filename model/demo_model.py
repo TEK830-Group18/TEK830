@@ -125,9 +125,20 @@ class DemoModel(Model):
         return self.currently_active_lamps
 
     def get_user_schedule(self):
+        """Get user data from a single day.
+        """
         user_data = "tools\mock_user_data.json"
         user_events = self.read_data(user_data)
-        user_schedule = Schedule.createSchedule(user_events)     
+        date_schedule_is_based_on = user_events[0].timestamp.date()
+        day_specific_events = []
+        for events in user_events:
+            if events.timestamp.date() == date_schedule_is_based_on:
+                day_specific_events.append(events)
+            else:
+                break
+            
+            
+        user_schedule = Schedule.createSchedule(day_specific_events)     
         return user_schedule
     
     def create_active_lamp_list(self) -> List[List[str]]:
