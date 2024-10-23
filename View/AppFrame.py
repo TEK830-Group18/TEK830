@@ -11,7 +11,6 @@ class AppFrame(ctk.CTk):
         # Need the image to be kept as instance variable, otherwise garbage collection removes it.
         image_dir = os.path.join("Images")
         self._image = Image.open(os.path.join(image_dir, "HÄRMAPA.png"))
-        #self._image = Image.open("Images\HÄRMAPA.png")
         image_width, image_height = self._image.size
         self._harmapa_image = ctk.CTkImage(self._image, size=(image_width-20, image_height-10))
         self.title('HÄRMAPA')
