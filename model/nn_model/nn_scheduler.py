@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import math
 from typing import List
 
 import pandas as pd
@@ -14,7 +15,8 @@ from progressbar import progressbar
 
 
 class NNScheduler(Scheduler):
-    DAY_SEGMENT_COUNT = 3
+    DAY_SEGMENT_COUNT = 6
+    EPOCH_COUNT = 40
     
     def __init__(self):
         super().__init__()
@@ -39,7 +41,7 @@ class NNScheduler(Scheduler):
 
         # Train the model
         print('Training model...')
-        self.train_model(model, X_train_tensor, y_train_tensor, criterion, optimizer, num_epochs=20)
+        self.train_model(model, X_train_tensor, y_train_tensor, criterion, optimizer, num_epochs=self.EPOCH_COUNT)
 
         # Evaluate the model
         # print('Evaluating model...')
@@ -66,6 +68,9 @@ class NNScheduler(Scheduler):
         
         df['lamp'] = df['lamp'].map(lamp_id_map)
         print(df)
+
+        # One-hot encode the lamp field
+        df = pd.get_dummies(df, columns=['lamp'], prefix='lamp', dtype=int)
 
         # Split features and target
         features = df.drop(['start', 'length'], axis=1)
@@ -109,7 +114,8 @@ class NNScheduler(Scheduler):
                     if events[j].action == LampAction.OFF:
                         end = events[j].timestamp
                         break
-                timespans.append({'lamp': lamp, 'start': start, 'length': (end - start).total_seconds() // 60})
+                if end is not None:
+                    timespans.append({'lamp': lamp, 'start': start, 'length': (end - start).total_seconds() // 60})
         return timespans
     
     def train_model(self, model: NNModel, X_train: torch.Tensor, y_train: torch.Tensor, criterion, optimizer, num_epochs: int):
@@ -159,13 +165,20 @@ class NNScheduler(Scheduler):
                 for segment in range(self.DAY_SEGMENT_COUNT):
                     time_of_day_tensor = torch.tensor([segment], dtype=torch.float32)
                     lamp_id_tensor = torch.tensor([lamp_id_to_int[lamp_id]], dtype=torch.float32)
-                    sequence_tensor = torch.cat((time_of_day_tensor, lamp_id_tensor), dim=0).unsqueeze(0)
-                    print(f'sequence_tensor: {sequence_tensor.shape}')
+
+                    # One-hot encode the lamp ID
+                    lamp_one_hot = torch.zeros(len(lamp_names))
+                    lamp_one_hot[lamp_id_to_int[lamp_id]] = 1.0
+
+
+                    # Concatenate the time of day and one-hot encoded lamp ID
+                    sequence_tensor = torch.cat((time_of_day_tensor, lamp_one_hot), dim=0).unsqueeze(0)
+                    
                     time_to_turn_on, duration = model(sequence_tensor)
                     turn_on_minute = round(time_to_turn_on.item())
                     duration_minutes = round(duration.item() * 1440)
                     
-                    if duration_minutes > 30:
+                    if duration_minutes > 0:
                         on_timestamp = datetime.today().replace(hour=turn_on_minute // 60, minute=turn_on_minute % 60, second=0, microsecond=0)
                         schedule_events.append(LampEvent(lamp=lamp_id, timestamp=on_timestamp, action=LampAction.ON))
                         off_timestamp = on_timestamp + timedelta(minutes=duration_minutes)
