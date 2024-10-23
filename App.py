@@ -30,7 +30,7 @@ class Application:
         
         # Actitvation button and schedule list
         activation_btn = ActivationButton(self.app)
-        schedule_list = ScheduleList(self.app, activation_btn)
+        schedule_list = ScheduleList(self.app, activation_btn, model)
         activation_btn.add_observer(schedule_list)
 
         apt = Apt(self.app, model)

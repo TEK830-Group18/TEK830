@@ -1,3 +1,4 @@
+from datetime import datetime
 import customtkinter as ctk
 
 
@@ -7,11 +8,13 @@ class ScheduleListElement(ctk.CTkFrame):
     Args:
         ctk (CTkFrame)
     """
-    def __init__(self, master, text : str):
+    def __init__(self, master, lamp_name : str, time_stamp : datetime, action: str):
         super().__init__(master)
         
+        self.text = f"{lamp_name} will turn {action.capitalize()} at {time_stamp.time()}"
+        
         self._lbl = ctk.CTkLabel(self,
-                                 text = text,
+                                 text = self.text,
                                  width = 140,
                                  height=30,
                                  corner_radius=10,

@@ -13,6 +13,9 @@ class ScheduleList(ctk.CTkFrame, Observer):
         self._width = 150
         self._height = 230
         self._controller : ActivationButton = controller
+        self.model = model
+        #TODO dynamically change schedule
+        self.schedule = self.model.get_user_schedule()
         
         self._deactivated_str = "Schedule without HÄRMAPA"
         self._activated_str = "Schedule with HÄRMAPA"
@@ -57,9 +60,10 @@ class ScheduleList(ctk.CTkFrame, Observer):
         """
         
         #example code for filling the list
-        nr_of_elements = 10
+        nr_of_elements = len(self.schedule.events)
+        events = self.schedule.events
         for i in range(0, nr_of_elements):
-            e = ScheduleListElement(self._list_frame, f"Room {i}, Event {i}")
+            e = ScheduleListElement(self._list_frame, lamp_name=events[i].lamp, time_stamp=events[i].timestamp, action=events[i].action.value)
             e.grid(row=i, column=0,pady=5)
         
     #TODO maybe this should trigger when schedule in model updates? This class could observe the model?
