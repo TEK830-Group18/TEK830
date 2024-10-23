@@ -28,6 +28,7 @@ class DemoModel(Model):
         print(self.active_lamps_list[415])
         self.currently_active_lamps = self.active_lamps_list[self.current_time_in_minutes]
         
+        # to turn on lamps that should be turned on, if given a start time that means that lights should be on
         for lamp in self.currently_active_lamps:
             self.publish_lamp_event(self.current_time,lamp,LampAction.ON)
 
@@ -82,7 +83,6 @@ class DemoModel(Model):
 
     def mainloop(self):
         self.start()
-        #TODO shit dont work
         while True:
             self.current_time = self.get_time()
             current_time_in_minutes = self._get_minutes_from_datetime(self.current_time)
