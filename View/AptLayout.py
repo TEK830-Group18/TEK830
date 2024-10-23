@@ -6,7 +6,6 @@ import os
 
 class AptLayout(EventObserver):
     def __init__(self, parent, model : demo_model):
-        super().__init__()
         self.model = model
         
         # Image directory and new height
