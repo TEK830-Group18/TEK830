@@ -52,22 +52,13 @@ class DemoModel(Model):
                 self.publish_lamp_event(time,lamp,LampAction.OFF)
         else: 
             if prev_active_lamps != self.currently_active_lamps:
-                # if statement to see if user jumped forwards or backwards in time
-                # if self.prev_time <= time:
-                    lamps_to_update = list(set(self.currently_active_lamps).symmetric_difference(set(prev_active_lamps)))
-                    for lamp in lamps_to_update:
-                        # if lamp from the difference is in the active lamps list, turn it on and vice verca
-                        if lamp in prev_active_lamps:
-                            self.publish_lamp_event(time,lamp,LampAction.OFF)
-                        else:
-                            self.publish_lamp_event(time,lamp,LampAction.ON)
-                # else:
-                    # lamps_to_update = list(set(self.currently_active_lamps).symmetric_difference(set(prev_active_lamps)))
-                    # for lamp in lamps_to_update:
-                    #     if lamp in prev_active_lamps:
-                    #         self.publish_lamp_event(time,lamp,LampAction.OFF)
-                    #     else:
-                    #         self.publish_lamp_event(time,lamp,LampAction.ON)
+                lamps_to_update = list(set(self.currently_active_lamps).symmetric_difference(set(prev_active_lamps)))
+                for lamp in lamps_to_update:
+                    # if lamp from the difference is in the active lamps list, turn it on and vice verca
+                    if lamp in prev_active_lamps:
+                        self.publish_lamp_event(time,lamp,LampAction.OFF)
+                    else:
+                        self.publish_lamp_event(time,lamp,LampAction.ON)
         self.prev_time = time
         
     def publish_lamp_event(self, time : datetime, lamp_name : str, action : LampAction):

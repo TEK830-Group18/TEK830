@@ -45,7 +45,7 @@ class Application:
     
         
 if __name__ == "__main__":
-    start_time = datetime.now().replace(hour=6,minute=54,second=30)
+    start_time = datetime.now().replace(hour=0,minute=0,second=0)
     timer = Timer()
     schduler = MoreOftenThanNotMAlg()
     model = DemoModel(schduler, timer, start_time)

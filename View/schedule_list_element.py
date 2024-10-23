@@ -11,12 +11,12 @@ class ScheduleListElement(ctk.CTkFrame):
     def __init__(self, master, lamp_name : str, time_stamp : datetime, action: str):
         super().__init__(master)
         
-        self.text = f"{lamp_name} will turn {action.capitalize()} at {time_stamp.time()}"
+        self.text = f"{lamp_name} will turn {action.capitalize()} \n at {time_stamp.time()}"
         
         self._lbl = ctk.CTkLabel(self,
                                  text = self.text,
                                  width = 140,
-                                 height=30,
+                                 height=40,
                                  corner_radius=10,
                                  fg_color="#ebe8e8",
                                  font=("Helvetica", 12),
