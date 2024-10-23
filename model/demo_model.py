@@ -77,9 +77,6 @@ class DemoModel(Model):
     def remove_observer(self, observer):
         self.observers.remove(observer)
 
-    def notify_observers(self):
-        raise NotImplementedError
-
     def mainloop(self):
         self.start()
         # TODO makes the whole program run like shit
