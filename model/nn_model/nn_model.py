@@ -14,6 +14,7 @@ class NNModel(nn.Module):
         x = torch.relu(self.fc1(x))
         x = torch.relu(self.fc2(x))
         x = self.fc3(x)
-        time_to_turn_on = torch.sigmoid(x[:, 0])  * 1440 # Scale between 0 and 1 * 1440
-        duration = torch.relu(x[:, 1])  # Ensure non-negative values
+        time_to_turn_on = torch.sigmoid(x[:, 0])  * 1440 # Scale between 0 and 1440
+        duration = torch.sigmoid(x[:, 1]) * 1440  # Scale between 0 and 1440
+        print(time_to_turn_on / 1440)
         return time_to_turn_on.float(), duration.float()

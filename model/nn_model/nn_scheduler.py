@@ -15,7 +15,7 @@ from progressbar import progressbar
 
 
 class NNScheduler(Scheduler):
-    DAY_SEGMENT_COUNT = 6
+    DAY_SEGMENT_COUNT = 12
     EPOCH_COUNT = 40
     
     def __init__(self):
@@ -24,6 +24,8 @@ class NNScheduler(Scheduler):
     def createSchedule(self, user_actions: List[LampEvent]) -> Schedule:
         # Prepare the data
         print('Formatting data...')
+
+        # Map lamp names to integers, used for one-hot encoding
         lamp_id_map = {lamp: i for i, lamp in enumerate(set(event.lamp for event in user_actions))}        
         
         features, target, lamp_names = self.format_data(user_actions, lamp_id_map)
@@ -37,7 +39,7 @@ class NNScheduler(Scheduler):
 
         # Loss function and optimizer
         criterion = torch.nn.MSELoss()
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
 
         # Train the model
         print('Training model...')
@@ -56,6 +58,7 @@ class NNScheduler(Scheduler):
     def format_data(self, user_actions: List[LampEvent], lamp_id_map: dict[str, int]) -> tuple[DataFrame, DataFrame, list[str]]:
         # Generate timespans for each lamp event
         data = self.generate_timespans(user_actions)
+
         # Split the day into segments
         data = self.split_day_to_segments(data, self.DAY_SEGMENT_COUNT) 
         
@@ -63,9 +66,10 @@ class NNScheduler(Scheduler):
         df = DataFrame(data)
         print(df)
 
-        # Get the unique lamp names
+        # Get the unique lamp names, used for generating the schedule
         original_lamp_names = df['lamp'].unique().tolist()
         
+        # Map the lamp names to integers
         df['lamp'] = df['lamp'].map(lamp_id_map)
         print(df)
 
@@ -103,6 +107,7 @@ class NNScheduler(Scheduler):
         return X_train_tensor, X_test_tensor, y_train_tensor, y_test_tensor
     
     def generate_timespans(self, events: list[LampEvent]) -> list[dict]:
+        # Generate timespans for each lamp event with a start time and duration
         timespans = []
         events.sort(key=lambda x: x.timestamp)
         for i, event in enumerate(events):
@@ -151,7 +156,7 @@ class NNScheduler(Scheduler):
             test_outputs = model(X_test_tensor)
             test_outputs = test_outputs.round()  # Convert sigmoid output to binary prediction
             accuracy = (test_outputs.eq(y_test_tensor).sum() / float(y_test_tensor.shape[0])).item()
-            print(f'Accuracy on test data: {accuracy * 100:.2f}%')
+            # print(f'Accuracy on test data: {accuracy * 100:.2f}%')
 
     def create_24_hour_schedule(self, model: NNModel, lamp_names: list[str]) -> Schedule:
         model.eval()
@@ -176,15 +181,51 @@ class NNScheduler(Scheduler):
                     
                     time_to_turn_on, duration = model(sequence_tensor)
                     turn_on_minute = round(time_to_turn_on.item())
-                    duration_minutes = round(duration.item() * 1440)
+                    duration_minutes = round(duration.item())
                     
-                    if duration_minutes > 0:
-                        on_timestamp = datetime.today().replace(hour=turn_on_minute // 60, minute=turn_on_minute % 60, second=0, microsecond=0)
-                        schedule_events.append(LampEvent(lamp=lamp_id, timestamp=on_timestamp, action=LampAction.ON))
-                        off_timestamp = on_timestamp + timedelta(minutes=duration_minutes)
-                        schedule_events.append(LampEvent(lamp=lamp_id, timestamp=off_timestamp, action=LampAction.OFF))
+                    self.append_to_schedule(
+                        schedule_events=schedule_events,
+                        lamp=lamp_id,
+                        turn_on_minute=turn_on_minute,
+                        duration=duration_minutes
+                    )
         
         schedule_events.sort(key=lambda x: x.timestamp)
         for event in schedule_events:
             print(event)
         return Schedule(events=schedule_events)
+    
+    def append_to_schedule(self, schedule_events: list[LampEvent], lamp: str, turn_on_minute: int, duration) -> None:
+        if duration == 0:
+            return
+        
+        on_timestamp = datetime.today().replace(hour=turn_on_minute // 60, minute=turn_on_minute % 60, second=0, microsecond=0)
+        off_timestamp = on_timestamp + timedelta(minutes=duration)
+        
+        # Check if the lamp is already scheduled to be on
+        prev_event = None
+        for event in schedule_events[::-1]:
+            if event.lamp == lamp and event.timestamp < on_timestamp:
+                prev_event = event
+                break
+            if event.lamp == lamp and event.timestamp < on_timestamp:
+                prev_event = event
+                break
+        
+        if prev_event is None or prev_event.action == LampAction.OFF:
+            # Append ON and OFF events to the schedule
+            schedule_events.append(LampEvent(lamp=lamp, timestamp=on_timestamp, action=LampAction.ON))
+            schedule_events.append(LampEvent(lamp=lamp, timestamp=off_timestamp, action=LampAction.OFF))
+
+        else:
+            # Find the previous OFF event for the lamp
+            prev_off_event = None
+            for event in schedule_events[::-1]:
+                if event.lamp == lamp and event.timestamp < on_timestamp:
+                    prev_off_event = event
+                    break
+
+            # Update off event timestamp to the new on timestamp
+            if prev_off_event is None:
+                return
+            prev_off_event.timestamp = off_timestamp
