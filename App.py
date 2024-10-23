@@ -19,21 +19,21 @@ class Application:
         self.model = model
         self.model.set_time(start_time)
         self.app = AppFrame()
-        self.setup_ui()
+        self.setup_ui(model)
 
-    def setup_ui(self):
+    def setup_ui(self, model):
         # Demo model
         model = self.model
         # Slider and clock widget
         slider = TimeSlider(self.app, model)
-        clock_widget = ClockWidget(self.app, model)
+        clock_widget = ClockWidget(self.app, self.model)
         
         # Actitvation button and schedule list
-        activation_btn = ActivationButton(self.app)
-        schedule_list = ScheduleList(self.app, activation_btn, model)
+        activation_btn = ActivationButton(self.app, self.model)
+        schedule_list = ScheduleList(self.app, activation_btn, self.model)
         activation_btn.add_observer(schedule_list)
 
-        apt = Apt(self.app, model)
+        apt = Apt(self.app, self.model)
         
         model.add_observer(apt)
         

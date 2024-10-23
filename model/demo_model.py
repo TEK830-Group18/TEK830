@@ -15,7 +15,12 @@ class DemoModel(Model):
     def __init__(self, scheduler : MimickingAlgorithm, timer: ATimer, start_time : datetime):
         self.timer = timer
         self.scheduler = scheduler
-        self.schedule = self.get_user_schedule()
+        self.user_schedule = self.get_user_schedule()
+        self.algortihm_schedule = self.get_schedule()
+        
+        self.use_user_schedule = True
+        self.current_schedule = self.user_schedule
+        
         self.start_time = start_time
         self.current_hours = self.start_time.hour
         self.current_minutes = self.start_time.minute
@@ -24,6 +29,7 @@ class DemoModel(Model):
         self.observers = []
 
         self.current_time_in_minutes = self.current_time.hour * 60 + self.current_time.minute
+            
         self.active_lamps_list = self.create_active_lamp_list()
         self.currently_active_lamps = self.active_lamps_list[self.current_time_in_minutes]
         
@@ -113,7 +119,9 @@ class DemoModel(Model):
         return time.hour * 60 + time.minute
 
     def get_schedule(self):
-        raise NotImplementedError
+        user_data = "tools\mock_user_data.json"
+        user_events = self.read_data(user_data)
+        return self.scheduler.createSchedule(user_events)
     
     def get_current_active_lights(self):
         return self.currently_active_lamps
@@ -126,7 +134,7 @@ class DemoModel(Model):
         return user_schedule
     
     def create_active_lamp_list(self) -> List[List[str]]:
-        events = self.schedule.events[:]
+        events = self.current_schedule.events[:]
         
         active_lamps = [[] for _ in range(1440)]
         
@@ -146,9 +154,36 @@ class DemoModel(Model):
                 
         return active_lamps
     
+    def get_current_schedule(self) -> Schedule:
+        return self.current_schedule
+    
     def change_current_schedule(self):
-        pass
+        prev_active_lamps_list = self.active_lamps_list
+        current_time_in_minutes = self._get_minutes_from_datetime(self.get_time())
+
+        if self.use_user_schedule:
+            self.current_schedule = self.user_schedule
+            self.publish_events_after_schedule_switch(current_time_in_minutes, prev_active_lamps_list)
+        else:
+            self.current_schedule = self.algortihm_schedule
+            self.publish_events_after_schedule_switch(current_time_in_minutes, prev_active_lamps_list)
+
+
+    def publish_events_after_schedule_switch(self, current_time_in_minutes, prev_active_lamps_list):
+        new_active_lamps_list = self.create_active_lamp_list()
         
+        if len(new_active_lamps_list[current_time_in_minutes]) == 0:
+            for lamp in prev_active_lamps_list[current_time_in_minutes]:
+                self.publish_lamp_event(self.get_time(),lamp,LampAction.OFF)
+            return
+        if prev_active_lamps_list[current_time_in_minutes] != new_active_lamps_list[current_time_in_minutes]:
+            lamps_to_update = list(set(prev_active_lamps_list[current_time_in_minutes]).symmetric_difference(set(new_active_lamps_list[current_time_in_minutes])))
+            for lamp in lamps_to_update:
+                if lamp in prev_active_lamps_list[current_time_in_minutes]:
+                    self.publish_lamp_event(self.get_time(),lamp,LampAction.OFF)
+                else:
+                    self.publish_lamp_event(self.get_time(),lamp,LampAction.ON)
+                    
     def read_data(self, path:str):
         with open(path, mode='r') as f:
             json_data = json.load(f)

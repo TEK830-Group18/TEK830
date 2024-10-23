@@ -27,6 +27,10 @@ class Model(EventPublisher, ABC):
     @abstractmethod
     def change_current_schedule(self):
         pass
+    
+    @abstractmethod 
+    def get_current_schedule(self) -> Schedule:
+        pass
 
     @abstractmethod
     def get_time(self) -> datetime:

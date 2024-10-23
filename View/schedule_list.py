@@ -15,7 +15,7 @@ class ScheduleList(ctk.CTkFrame, Observer):
         self._controller : ActivationButton = controller
         self.model = model
         #TODO dynamically change schedule
-        self.schedule = self.model.get_user_schedule()
+        self.schedule = self.model.get_current_schedule()
         
         self._deactivated_str = "Schedule without HÄRMAPA"
         self._activated_str = "Schedule with HÄRMAPA"
@@ -70,7 +70,8 @@ class ScheduleList(ctk.CTkFrame, Observer):
     def update_list(self):
         """Should update the list in the list box with new entries from a schedule
         """
-        pass
+        self.schedule = self.model.get_current_schedule()
+        self._build_list()
     
     def notify(self):
         if self._controller.is_activated() == True:
