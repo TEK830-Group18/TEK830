@@ -4,6 +4,8 @@ from model.abstract_event_observer import EventObserver
 import model.demo_model as demo_model
 import os
 
+from model.events.lamp_action import LampAction
+
 class AptLayout(EventObserver):
     def __init__(self, parent, model : demo_model):
         self.model = model
@@ -43,8 +45,7 @@ class AptLayout(EventObserver):
 
         self.display_layout(parent)
         self.update_initial_brightness()
-
-        
+ 
     # Method to make all the room dark initially
     def update_initial_brightness(self):
         self.modified_image = self.original_image.copy()  
@@ -81,10 +82,10 @@ class AptLayout(EventObserver):
         if room_name in self.room_coordinates:
             current_state = self.room_states[room_name]
 
-        if action == "on" and not current_state:
+        if action == LampAction.ON.value and not current_state:
             self.room_states[room_name] = True
 
-        elif action == "off" and current_state:
+        elif action == LampAction.OFF.value and current_state:
             self.room_states[room_name] = False
     
         self.update_layout()
