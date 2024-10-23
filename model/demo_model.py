@@ -116,7 +116,7 @@ class DemoModel(Model):
         return time.hour * 60 + time.minute
 
     def get_schedule(self):
-        user_data = "tools\mock_user_data copy.json"
+        user_data = "tools\mock_user_data.json"
         user_events = self.read_data(user_data)
         return self.scheduler.createSchedule(user_events)
     
