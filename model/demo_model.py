@@ -71,7 +71,7 @@ class DemoModel(Model):
         event = LampEvent(time,lamp_name,action)
         self.publish(event)
 
-    def publish(self, event):
+    def publish(self, event: LampEvent):
         for o in self.observers:
             o.notify(event)
 
