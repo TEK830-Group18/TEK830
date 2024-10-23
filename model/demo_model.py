@@ -136,9 +136,7 @@ class DemoModel(Model):
             if events.timestamp.date() == date_schedule_is_based_on:
                 day_specific_events.append(events)
             else:
-                break
-            
-            
+                break   
         user_schedule = Schedule.createSchedule(day_specific_events)     
         return user_schedule
     
@@ -179,7 +177,6 @@ class DemoModel(Model):
             self.use_using_schedule = False
         self.prev_current_active_lamps_list = self.current_active_lamps_list
 
-
     def publish_events_after_schedule_switch(self, current_time_in_minutes, prev_current_active_lamps_list):
         new_current_active_lamps_list = self.create_active_lamp_list()
         
@@ -195,8 +192,7 @@ class DemoModel(Model):
                 else:
                     self.publish_lamp_event(self.get_time(),lamp,LampAction.ON)
         self.current_active_lamps_list = new_current_active_lamps_list
-
-                    
+               
     def read_data(self, path:str):
         with open(path, mode='r') as f:
             json_data = json.load(f)

@@ -2,8 +2,6 @@ import customtkinter as ctk
 
 from View.colors import Colors
 from model.abstract_model import Model
-from model.observer import Observer
-from View.time_slider import TimeSlider
 
 class ClockWidget(ctk.CTkFrame):
     def __init__(self, parent, model: Model):
