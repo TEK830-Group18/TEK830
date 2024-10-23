@@ -4,7 +4,7 @@ from model.events.lamp_event import LampEvent
 from model.observable import Observable
 from datetime import datetime
 
-class EventPublisher(Observable, ABC):
+class EventPublisher(ABC):
     """
     Abstract class for publishing events.
     """

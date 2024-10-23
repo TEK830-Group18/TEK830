@@ -83,9 +83,6 @@ class DemoModel(Model):
     def remove_observer(self, observer):
         self.observers.remove(observer)
 
-    def notify_observers(self):
-        raise NotImplementedError
-
     def mainloop(self):
         self.start()
         while True:

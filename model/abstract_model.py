@@ -55,7 +55,3 @@ class Model(EventPublisher, ABC):
     @abstractmethod
     def remove_observer(self, observer) -> None:
         pass
-
-    @abstractmethod
-    def notify_observers(self) -> None:
-        pass
