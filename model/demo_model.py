@@ -2,6 +2,7 @@ import json
 from typing import List
 import View.AptLayout as AptView
 from View.time_slider import TimeSlider
+from model.abstract_event_observer import EventObserver
 from model.abstract_model import Model
 from model.abstract_timer import ATimer
 from model.algorithm.abstract_mimicking_algorithm import MimickingAlgorithm
