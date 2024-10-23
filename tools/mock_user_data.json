@@ -69,6 +69,286 @@
             "timestamp": "2024-09-24T23:00:00",
             "lamp": "bedroom",
             "action": "off"
+        },
+        {
+            "timestamp": "2024-09-25T06:40:00",
+            "lamp": "bedroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-25T06:55:00",
+            "lamp": "bathroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-25T07:00:00",
+            "lamp": "bathroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-25T07:05:00",
+            "lamp": "kitchen",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-25T07:25:00",
+            "lamp": "kitchen",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-25T07:40:00",
+            "lamp": "bedroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-25T18:30:00",
+            "lamp": "livingroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-25T19:00:00",
+            "lamp": "kitchen",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-25T19:30:00",
+            "lamp": "kitchen",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-25T21:30:00",
+            "lamp": "bathroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-25T21:40:00",
+            "lamp": "bathroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-25T22:30:00",
+            "lamp": "bedroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-25T23:00:00",
+            "lamp": "livingroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-25T23:30:00",
+            "lamp": "bedroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-26T06:20:00",
+            "lamp": "bedroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-26T06:35:00",
+            "lamp": "bathroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-26T06:40:00",
+            "lamp": "bathroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-26T07:10:00",
+            "lamp": "kitchen",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-26T07:15:00",
+            "lamp": "kitchen",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-26T07:20:00",
+            "lamp": "bedroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-26T18:05:00",
+            "lamp": "livingroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-26T18:25:00",
+            "lamp": "kitchen",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-26T19:05:00",
+            "lamp": "kitchen",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-26T21:10:00",
+            "lamp": "bathroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-26T21:15:00",
+            "lamp": "bathroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-26T22:05:00",
+            "lamp": "bedroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-26T22:25:00",
+            "lamp": "livingroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-26T23:07:00",
+            "lamp": "bedroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-27T06:35:00",
+            "lamp": "bedroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-27T06:49:00",
+            "lamp": "bathroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-27T06:55:00",
+            "lamp": "bathroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-27T06:59:00",
+            "lamp": "kitchen",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-27T07:19:00",
+            "lamp": "kitchen",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-27T07:35:00",
+            "lamp": "bedroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-27T18:05:00",
+            "lamp": "livingroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-27T18:35:00",
+            "lamp": "kitchen",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-27T19:05:00",
+            "lamp": "kitchen",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-27T21:05:00",
+            "lamp": "bathroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-27T21:15:00",
+            "lamp": "bathroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-27T22:05:00",
+            "lamp": "bedroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-27T22:35:00",
+            "lamp": "livingroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-27T23:05:00",
+            "lamp": "bedroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-28T07:30:00",
+            "lamp": "bedroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-28T07:45:00",
+            "lamp": "bathroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-28T07:50:00",
+            "lamp": "bathroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-28T07:55:00",
+            "lamp": "kitchen",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-28T08:15:00",
+            "lamp": "kitchen",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-28T08:30:00",
+            "lamp": "bedroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-28T18:00:00",
+            "lamp": "livingroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-28T18:30:00",
+            "lamp": "kitchen",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-28T20:00:00",
+            "lamp": "kitchen",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-28T21:00:00",
+            "lamp": "bathroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-28T21:10:00",
+            "lamp": "bathroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-28T22:00:00",
+            "lamp": "bedroom",
+            "action": "on"
+        },
+        {
+            "timestamp": "2024-09-28T22:30:00",
+            "lamp": "livingroom",
+            "action": "off"
+        },
+        {
+            "timestamp": "2024-09-28T23:00:00",
+            "lamp": "bedroom",
+            "action": "off"
         }
     ]
 }
