@@ -209,10 +209,7 @@ class NNScheduler(Scheduler):
         # Check if the lamp is already scheduled to be on
         prev_event = None
         for event in schedule_events[::-1]:
-            if event.lamp == lamp and event.timestamp < on_timestamp:
-                prev_event = event
-                break
-            if event.lamp == lamp and event.timestamp < on_timestamp:
+            if event.lamp == lamp and event.timestamp <= on_timestamp:
                 prev_event = event
                 break
         
@@ -220,19 +217,20 @@ class NNScheduler(Scheduler):
             # Append ON and OFF events to the schedule
             schedule_events.append(LampEvent(lamp=lamp, timestamp=on_timestamp, action=LampAction.ON))
             schedule_events.append(LampEvent(lamp=lamp, timestamp=off_timestamp, action=LampAction.OFF))
-
         else:
             # Find the previous OFF event for the lamp
             prev_off_event = None
             for event in schedule_events[::-1]:
-                if event.lamp == lamp and event.timestamp < on_timestamp:
+                if event.lamp == lamp and event.action == LampAction.OFF and event.timestamp > on_timestamp:
                     prev_off_event = event
                     break
 
-            # Update off event timestamp to the new on timestamp
-            if prev_off_event is None:
-                return
-            prev_off_event.timestamp = off_timestamp
+            # Update off event timestamp to the new off timestamp
+            if prev_off_event:
+                prev_off_event.timestamp = off_timestamp
+            else:
+                # Append OFF event if no previous OFF event is found
+                schedule_events.append(LampEvent(lamp=lamp, timestamp=off_timestamp, action=LampAction.OFF))
 
     # Denormalizing start time
     # Normalizing start time (minute of the day)
