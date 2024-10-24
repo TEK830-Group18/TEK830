@@ -16,7 +16,7 @@ from progressbar import progressbar
 
 class NNScheduler(Scheduler):
     DAY_SEGMENT_COUNT = 12
-    EPOCH_COUNT = 40
+    EPOCH_COUNT = 80
     
     def __init__(self):
         super().__init__()
@@ -38,8 +38,8 @@ class NNScheduler(Scheduler):
         model: NNModel = NNModel(input_size)
 
         # Loss function and optimizer
-        criterion = torch.nn.MSELoss()
-        optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
+        criterion = torch.nn.HuberLoss()
+        optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
         # Train the model
         print('Training model...')
@@ -65,6 +65,10 @@ class NNScheduler(Scheduler):
         # Create a pandas DataFrame
         df = DataFrame(data)
         print(df)
+
+        # Normalize the start and length columns
+        df['start'] = df['start'].apply(lambda x: self.normalize_start_time(x))
+        df['length'] = df['length'].apply(lambda x: self.normalize_duration(x))
 
         # Get the unique lamp names, used for generating the schedule
         original_lamp_names = df['lamp'].unique().tolist()
@@ -180,8 +184,8 @@ class NNScheduler(Scheduler):
                     sequence_tensor = torch.cat((time_of_day_tensor, lamp_one_hot), dim=0).unsqueeze(0)
                     
                     time_to_turn_on, duration = model(sequence_tensor)
-                    turn_on_minute = round(time_to_turn_on.item())
-                    duration_minutes = round(duration.item())
+                    turn_on_minute = round(self.denormalize_start_time(time_to_turn_on.item()))
+                    duration_minutes = round(self.denormalize_duration(duration.item()))
                     
                     self.append_to_schedule(
                         schedule_events=schedule_events,
@@ -194,7 +198,7 @@ class NNScheduler(Scheduler):
         for event in schedule_events:
             print(event)
         return Schedule(events=schedule_events)
-    
+
     def append_to_schedule(self, schedule_events: list[LampEvent], lamp: str, turn_on_minute: int, duration) -> None:
         if duration == 0:
             return
@@ -229,3 +233,20 @@ class NNScheduler(Scheduler):
             if prev_off_event is None:
                 return
             prev_off_event.timestamp = off_timestamp
+
+    # Denormalizing start time
+    # Normalizing start time (minute of the day)
+    def normalize_start_time(self, start_time):
+        return start_time / 1440.0  # Normalizing to the range [0, 1]
+
+    # Normalizing duration with a given range [min_duration, max_duration]
+    def normalize_duration(self, duration, min_duration=1, max_duration=120):
+        return (duration - min_duration) / (max_duration - min_duration)
+    
+    # Denormalizing start time
+    def denormalize_start_time(self, normalized_start_time):
+        return normalized_start_time * 1440
+
+    # Denormalizing duration
+    def denormalize_duration(self, normalized_duration, min_duration=1, max_duration=120):
+        return normalized_duration * (max_duration - min_duration) + min_duration
