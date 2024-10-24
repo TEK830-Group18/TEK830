@@ -2,6 +2,7 @@ from abstract_event_observer import EventObserver
 from model.events.lamp_event import LampEvent
 import json
 import paho.mqtt.client as mqtt
+import threading
 
 class MqttLightService(EventObserver):
     """
@@ -31,15 +32,24 @@ class MqttLightService(EventObserver):
         Handles the given LampEvent by publishing it to the MQTT broker. Message is formatted for zigbee2mqtt.
         """
 
+        thread = threading.Thread(target=self.__publish_event, args=(event,))
+        thread.start()
+
+    def __publish_event(self, event: LampEvent) -> None:
+        """
+        Publishes the given LampEvent to the MQTT broker.
+        """
         topic = f"{self.base_topic}/{event.lamp}/set"
         payload = self.__translate_event(event)
 
         try:
             self.client.connect(self.mqtt_address, self.mqtt_port)
             self.client.publish(topic, payload)
-            self.client.disconnect()
+            print(f"Published event: {payload} to topic: {topic} on mqtt://{self.mqtt_address}:{self.mqtt_port}")
         except Exception as e:
             print(f"Error: {e}")
+        finally:
+            self.client.disconnect()
 
     def __translate_event(self, event: LampEvent) -> str:
         return json.dumps({f'state': event.action.value})
