@@ -1,88 +1,115 @@
 import tkinter as tk
 from PIL import Image, ImageTk, ImageEnhance
+from model.abstract_event_observer import EventObserver
+import model.demo_model as demo_model
 import os
 
+from model.events.lamp_action import LampAction
 
-class AptLayout:
-    def __init__(self, parent):
-
-        # Darkness intensity
-        self.darknessIntensity = 0.4
+class AptLayout(EventObserver):
+    def __init__(self, parent, model : demo_model):
+        self.model = model
         
-        # Image directory (cross-platforms path)
-        image_dir = os.path.join("Images")
+        # Image directory and new height
+        IMAGE_DIR = os.path.join("Images")
+        IMAGE_NAME = "AptLayout.png"
+        NEW_HEIGHT = 380
 
-        # Apartment layout image
-        self.aptLayoutPic = Image.open(os.path.join(image_dir, "AptLayout.png"))
+        self.room_states = {
+            "bedroom" : False,
+            "livingroom" : False,
+            "kitchen" : False,
+            "bathroom" : False,
+            "hall" : False
+        }
 
-        # Resizing the layout image
-        aspect_ratio = self.aptLayoutPic.width / self.aptLayoutPic.height
-        old_width, old_height = self.aptLayoutPic.size
-        new_height = 380
-        new_width = int(aspect_ratio * new_height)
-        self.aptLayoutPic = self.aptLayoutPic.resize((new_width, new_height))
-
-        # Scaling factors 
-        self.scale_width = new_width / old_width
-        self.scale_height = new_height / old_height
+        self.DARKNESSINTENSITY = 0.5
+        self.BRIGHTNESSINTENSITY = 1.0
 
         # Coordinate for rooms in the layout
-        self.room_coordinations = {
+        self.room_coordinates = {
             "bedroom" : (128, 29, 192, 153),
             "livingroom" : (90, 158, 192, 309),
             "kitchen" : (26, 158, 90, 309),
             "bathroom" : (26, 29, 90, 153),
             "hall" : (95, 29, 127, 153)
         }
-        
-        # Intial state of all rums (Dark)
-        self.room_state = {
-            room: True for room in self.room_coordinations
-        }
+        # Apartment layout image
+        self.original_image = Image.open(os.path.join(IMAGE_DIR, IMAGE_NAME))
 
-        for room, coordinate in self.room_coordinations.items():
-            self.darken_rooms(coordinate)
+        # Resizing the layout image
+        aspect_ratio = self.original_image.width / self.original_image.height
+        new_width = int(aspect_ratio * NEW_HEIGHT)
+        self.original_image = self.original_image.resize((new_width, NEW_HEIGHT))
+        self.modified_image = self.original_image.copy()
+
         self.display_layout(parent)
-        
-    # Method that make room dark
-    def darken_rooms(self, coordinate):
-        room_image = self.aptLayoutPic.crop(coordinate)
-        room_dark = ImageEnhance.Brightness(room_image).enhance(self.darknessIntensity)
-        self.aptLayoutPic.paste(room_dark, coordinate)
-
-    # Method that turn on the light
-    def brighten_rooms(self, coordinate):
-        old_image = Image.open(os.path.join("Images", "AptLayout.png"))
-        old_room_image = old_image.crop(coordinate)
-        self.aptLayoutPic.paste(old_room_image, coordinate)
-
-    # Method to toggle between darkness and light
-    def toggle_rooms(self, room_name):
-        if room_name in self.room_coordinations:
-            coordinate = self.room_coordinations[room_name]
-
-            if self.room_state[room_name]:
-                self.brighten_rooms(coordinate)
-            else:
-                self.darken_rooms(coordinate)
-
-            # Toggle between states
-            self.room_state[room_name] = not self.room_state[room_name]
-
-            # Update the display image
-            self.update_display()
-
-        else:
-            print(f"Room {room_name} not found.")
+        self.update_initial_brightness()
+ 
+    # Method to make all the room dark initially
+    def update_initial_brightness(self):
+        self.modified_image = self.original_image.copy()  
+        for room in self.room_states:  
+            self.apply_all_brightness(room)
+        self.update_display()
     
+    # Method to apply darkness or brightness to the room
+    def darken_rooms(self, room_name):
+        if room_name in self.room_coordinates:
+            coordinate = self.room_coordinates[room_name]
+            room_image = self.original_image.crop(coordinate)
+            room_dark = ImageEnhance.Brightness(room_image).enhance(self.DARKNESSINTENSITY)
+            self.modified_image.paste(room_dark, coordinate)
+
+    # Method to apply brightness to the room
+    def apply_all_brightness(self, room_name):
+        if room_name in self.room_coordinates:
+            coordinate = self.room_coordinates[room_name]
+            brightness = (
+                self.BRIGHTNESSINTENSITY if self.room_states[room_name]
+                else self.DARKNESSINTENSITY
+            )
+            self.adjust_room_brightness(coordinate, brightness)
+
+    # Method to adjust room brightness
+    def adjust_room_brightness(self, coordinate, brightness):
+        room_image = self.original_image.crop(coordinate)
+        room_adjusted = ImageEnhance.Brightness(room_image).enhance(brightness)
+        self.modified_image.paste(room_adjusted, coordinate)
+
+    # Method to toggle room states
+    def toggle_rooms_state(self, room_name, action : str):
+        if room_name in self.room_coordinates:
+            current_state = self.room_states[room_name]
+
+        if action == LampAction.ON.value and not current_state:
+            self.room_states[room_name] = True
+
+        elif action == LampAction.OFF.value and current_state:
+            self.room_states[room_name] = False
+    
+        self.update_layout()
+
+    # Method to update the layout
+    def update_layout(self):
+        self.modified_image = self.original_image.copy()
+        for room in self.room_states:
+            self.apply_all_brightness(room)
+        self.update_display()
+
     # Method to update display
     def update_display(self):
-        self.aptLayout = ImageTk.PhotoImage(self.aptLayoutPic)
+        self.aptLayout = ImageTk.PhotoImage(self.modified_image)
         self.aptLayoutLabel.configure(image = self.aptLayout)
         self.aptLayoutLabel.image_names = self.aptLayout
 
-    # Method to put the picture on the main frame
+    # Method to update the display
     def display_layout(self, parent):
-        self.aptLayout = ImageTk.PhotoImage(self.aptLayoutPic)
+        self.aptLayout = ImageTk.PhotoImage(self.modified_image)
         self.aptLayoutLabel = tk.Label(parent, image = self.aptLayout)
         self.aptLayoutLabel.grid(row=1,column=1,sticky="E", padx=20, pady=50)
+
+    # Method to update the observer
+    def notify(self, event):
+        self.toggle_rooms_state(event.lamp, event.action.value)
+        self.update_display()

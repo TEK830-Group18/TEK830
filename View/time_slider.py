@@ -1,21 +1,19 @@
+from datetime import datetime
 import customtkinter as ctk
-
 from View.colors import Colors
-from model.observable import Observable
-from model.observer import Observer
+from model.abstract_model import Model
 
-class TimeSlider(ctk.CTkFrame, Observable):
-    def __init__(self, parent):
+class TimeSlider(ctk.CTkFrame):
+    def __init__(self, parent, model : Model):
         super().__init__(master=parent)
-        
-        self._obeservers: list = []
+                
+        self.model = model        
         
         self.updating: bool = False
         
-        self._seconds:int = 0
-        self._minute:int = 0
-        self._hour:int = 0
-        self.formatted_time = self.format_time(self._hour, self._minute, self._seconds)
+        self._seconds:int = self.model.get_time().second
+        self._minute:int = self.model.get_time().minute
+        self._hour:int = self.model.get_time().hour
         self.configure(fg_color=Colors.IKEA_BLUE.value)
         
         # init slider
@@ -30,34 +28,11 @@ class TimeSlider(ctk.CTkFrame, Observable):
                                      button_hover_color="dark gray",
                                      progress_color="light gray"
                                      )
-        self._slider.configure(command=self._update_values)
-        self._slider.set(0)
-        self._slider.grid(row=4, column=1, columnspan=2)        
-    
-    def _update_values(self, a):
-        """_summary_
-        Updates hours and minutes based on slider value, as well as notifying observers
-        """
-        self.updating = True
-        self._hour = self.get_hours()
-        self._minute = self.get_minutes()
-        self.formatted_time = self.format_time(self._hour, self._minute, 0)
-        self.notify_observers()
-        self.updating = False
-        
-    def format_time(self, hour, minute, second) -> str:
-        """Formats hours, minutes and seconds as HH:MM:SS.
-
-        Args:
-            hour (int): 
-            minute (int): 
-            second (int): 
-
-        Returns:
-            str: time formatted as "HH:MM:SS"
-        """
-        return str(hour).zfill(2) + ":" + str(minute).zfill(2) + ":" + str(second).zfill(2)
-    
+        self._slider.configure(command=self.set_time)
+        self._start_value = self.model.get_time().hour*60 + self.model.get_time().minute
+        self._slider.set(self._start_value)
+        self._slider.grid(row=4, column=1, columnspan=2)
+            
     def get_slider_value(self) -> int:
         return self._slider.get().as_integer_ratio()[0]
     
@@ -68,17 +43,18 @@ class TimeSlider(ctk.CTkFrame, Observable):
         return self.updating
     
     def get_hours(self):
-        return (self._slider.get() // 60) % 24
+        return (self.get_slider_value() // 60) % 24
     
     def get_minutes(self):
-        return self._slider.get() % 60
+        return self.get_slider_value() % 60
+            
+    def set_time(self, a):
+        time = datetime.now().replace(hour=self.get_hours(),minute=self.get_minutes(),second=0)
+        self.model.set_time(time)
     
-    def add_observer(self, observer: Observer):
-        self._obeservers.append(observer)
-        
-    def remove_observer(self, observer: Observer) -> None:
-        self._obeservers.remove(observer)
+    def get_time(self) -> datetime:
+        return self.model.get_time()
     
-    def notify_observers(self) -> None:
-        for ob in self._obeservers:
-            ob.notified_update()
+    def update_slider_value(self):
+        time = self.get_time().hour * 60 + self.get_time().minute
+        self._slider.set(time)

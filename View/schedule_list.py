@@ -3,15 +3,19 @@ import customtkinter as ctk
 
 from View.activation_button import ActivationButton
 from View.colors import Colors
+from model.abstract_model import Model
 from model.observer import Observer
 from View.schedule_list_element import ScheduleListElement
 
 class ScheduleList(ctk.CTkFrame, Observer):
-    def __init__(self, master, controller : ActivationButton):
+    def __init__(self, master, controller : ActivationButton, model : Model):
         super().__init__(master)
         self._width = 150
         self._height = 230
         self._controller : ActivationButton = controller
+        self.model = model
+        #TODO dynamically change schedule
+        self.schedule = self.model.get_current_schedule()
         
         self._deactivated_str = "Schedule without HÄRMAPA"
         self._activated_str = "Schedule with HÄRMAPA"
@@ -56,16 +60,20 @@ class ScheduleList(ctk.CTkFrame, Observer):
         """
         
         #example code for filling the list
-        nr_of_elements = 10
+        nr_of_elements = len(self.schedule.events)
+        events = self.schedule.events
         for i in range(0, nr_of_elements):
-            e = ScheduleListElement(self._list_frame, f"Room {i}, Event {i}")
+            e = ScheduleListElement(self._list_frame, lamp_name=events[i].lamp, time_stamp=events[i].timestamp, action=events[i].action.value)
             e.grid(row=i, column=0,pady=5)
         
     #TODO maybe this should trigger when schedule in model updates? This class could observe the model?
     def update_list(self):
         """Should update the list in the list box with new entries from a schedule
         """
-        pass
+        for widget in self._list_frame.winfo_children():
+            widget.destroy()
+        self.schedule = self.model.get_current_schedule()
+        self._build_list()
     
     def notify(self):
         if self._controller.is_activated() == True:

@@ -1,12 +1,15 @@
 import tkinter as tk
 import customtkinter as ctk
 
+from model.abstract_model import Model
 from model.observable import Observable
 from model.observer import Observer
 
 class ActivationButton(ctk.CTkFrame, Observable):
-    def __init__(self, parent):
+    def __init__(self, parent, model : Model):
         super().__init__(master=parent)
+        
+        self.model = model
         
         self._obeservers = []
         
@@ -33,9 +36,11 @@ class ActivationButton(ctk.CTkFrame, Observable):
         if(self._activated == False):
             self._btn.configure(text="Deactivate HÄRMAPA")
             self._activated = True
+            self.model.change_current_schedule()
         else:
             self._btn.configure(text="Activate HÄRMAPA")
             self._activated = False
+            self.model.change_current_schedule()
         self.notify_observers()
             
     def is_activated(self) -> bool:
@@ -49,4 +54,4 @@ class ActivationButton(ctk.CTkFrame, Observable):
         
     def notify_observers(self) -> None:
         for ob in self._obeservers:
-            ob.notified_update()
+            ob.notify()
