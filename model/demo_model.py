@@ -166,7 +166,7 @@ class DemoModel(Model):
     def get_current_schedule(self) -> Schedule:
         return self.current_schedule
     
-    def change_current_schedule(self):
+    def toggle_generated_schedule(self):
         current_time_in_minutes = self._get_minutes_from_datetime(self.get_time())
 
         if not self.use_using_schedule:
