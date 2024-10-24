@@ -36,11 +36,11 @@ class ActivationButton(ctk.CTkFrame, Observable):
         if(self._activated == False):
             self._btn.configure(text="Deactivate HÄRMAPA")
             self._activated = True
-            self.model.change_current_schedule()
+            self.model.toggle_generated_schedule()
         else:
             self._btn.configure(text="Activate HÄRMAPA")
             self._activated = False
-            self.model.change_current_schedule()
+            self.model.toggle_generated_schedule()
         self.notify_observers()
             
     def is_activated(self) -> bool:
