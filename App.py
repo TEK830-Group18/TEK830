@@ -10,10 +10,8 @@ from model.model import Model
 from model.algorithm.random_malg import RandomMAlg
 from model.algorithm.abstract_mimicking_algorithm import Schedule
 from model.demo_model import DemoModel
-from model.nn_model.nn_scheduler import NNScheduler
-from model.scheduler import Scheduler, RandomScheduler
 import threading
-
+from model.nn_model.nn_scheduler import NNScheduler
 from model.timer import Timer
 
 class Application:
@@ -50,7 +48,7 @@ class Application:
 if __name__ == "__main__":
     start_time = datetime.now().replace(hour=0,minute=0,second=0)
     timer = Timer()
-    schduler = MoreOftenThanNotMAlg()
+    schduler = NNScheduler()
     model = DemoModel(schduler, timer, start_time)
     app = Application(model, start_time)
     # view_thread: threading.Thread = threading.Thread(target=app.run_ui)

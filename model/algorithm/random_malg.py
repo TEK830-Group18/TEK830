@@ -5,22 +5,7 @@ from model.schedule import Schedule
 from datetime import datetime, time, timedelta
 import random
 
-class Scheduler(ABC):
-    """
-    Abstract base class for creating schedules.
-    Methods:
-        createSchedule(user_actions: List[LampEvent]) -> Schedule:
-            Abstract method for creating a schedule based on user actions.
-    """
-    def __init__(self) -> None:
-        pass
-
-    @abstractmethod
-    def createSchedule(self, user_actions: List[LampEvent]) -> Schedule:
-        pass
-
-
-class RandomScheduler(Scheduler):
+class RandomMAlg(MimickingAlgorithm):
     # TODO: Write a better version of this. Much is based on Github Copilot.
     periods_in_day: int
 

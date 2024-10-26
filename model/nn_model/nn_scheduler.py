@@ -9,10 +9,9 @@ from model.events.lamp_event import LampEvent
 from model.nn_model.linear_model import LinearModel
 from model.nn_model.time_duration_predictor import TimeDurationPredictor
 from model.schedule import Schedule
-from model.scheduler import Scheduler
+from model.algorithm.abstract_mimicking_algorithm import MimickingAlgorithm
 
-
-class NNScheduler(Scheduler):
+class NNScheduler(MimickingAlgorithm):
     DAY_SEGMENT_COUNT = 12
     EPOCH_COUNT = 100
     LEARNING_RATE = 0.001
