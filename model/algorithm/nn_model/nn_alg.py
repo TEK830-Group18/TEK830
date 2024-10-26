@@ -64,7 +64,6 @@ class NNAlg(MimickingAlgorithm):
         
         # Create a pandas DataFrame
         df = DataFrame(data)
-        print(df)
 
         # Normalize the start and length columns
         min_duration = df['length'].min()
@@ -78,7 +77,6 @@ class NNAlg(MimickingAlgorithm):
         
         # Map the lamp names to integers
         df['lamp'] = df['lamp'].map(lamp_id_map)
-        print(df)
 
         # One-hot encode the lamp field
         df = pd.get_dummies(df, columns=['lamp', 'segment'], prefix=['lamp', 'segment'], dtype=int)
