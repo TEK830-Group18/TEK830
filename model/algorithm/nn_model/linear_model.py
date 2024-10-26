@@ -6,7 +6,7 @@ from torch.optim import Optimizer
 from model.algorithm.nn_model.time_duration_predictor import TimeDurationPredictor
 
 class LinearModel(TimeDurationPredictor):
-    class __NNModel(nn.Module):
+    class __LinearNetwork(nn.Module):
         def __init__(self, input_size):
             super().__init__()
             self.fc1 = nn.Linear(input_size, 64)
@@ -23,7 +23,7 @@ class LinearModel(TimeDurationPredictor):
             return time_to_turn_on.float(), duration.float()
 
     def __init__(self, input_size):
-        self.model = self.__NNModel(input_size)
+        self.model = self.__LinearNetwork(input_size)
 
     def predict(self, X) -> tuple[Tensor, Tensor]:
         self.model.eval()
