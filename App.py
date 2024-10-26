@@ -11,7 +11,7 @@ from model.algorithm.random_malg import RandomMAlg
 from model.algorithm.abstract_mimicking_algorithm import Schedule
 from model.demo_model import DemoModel
 import threading
-from model.nn_model.nn_alg import NNAlg
+from model.algorithm.nn_model.nn_alg import NNAlg
 from model.timer import Timer
 
 class Application:

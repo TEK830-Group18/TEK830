@@ -6,13 +6,13 @@ from sklearn.model_selection import train_test_split
 import torch
 from model.events.lamp_action import LampAction
 from model.events.lamp_event import LampEvent
-from model.nn_model.linear_model import LinearModel
-from model.nn_model.time_duration_predictor import TimeDurationPredictor
+from model.algorithm.nn_model.linear_model import LinearModel
+from model.algorithm.nn_model.time_duration_predictor import TimeDurationPredictor
 from model.schedule import Schedule
 from model.algorithm.abstract_mimicking_algorithm import MimickingAlgorithm
 
 class NNAlg(MimickingAlgorithm):
-    DAY_SEGMENT_COUNT = 12
+    DAY_SEGMENT_COUNT = 8
     EPOCH_COUNT = 100
     LEARNING_RATE = 0.001
     MIN_DURATION = 5

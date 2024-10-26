@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 from torch.optim import Optimizer
-from model.nn_model.time_duration_predictor import TimeDurationPredictor
+from model.algorithm.nn_model.time_duration_predictor import TimeDurationPredictor
 
 class LinearModel(TimeDurationPredictor):
     class __NNModel(nn.Module):
