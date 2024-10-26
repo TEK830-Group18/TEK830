@@ -11,7 +11,7 @@ from model.nn_model.time_duration_predictor import TimeDurationPredictor
 from model.schedule import Schedule
 from model.algorithm.abstract_mimicking_algorithm import MimickingAlgorithm
 
-class NNScheduler(MimickingAlgorithm):
+class NNAlg(MimickingAlgorithm):
     DAY_SEGMENT_COUNT = 12
     EPOCH_COUNT = 100
     LEARNING_RATE = 0.001
