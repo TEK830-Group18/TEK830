@@ -26,5 +26,4 @@ class Model():
 
     def update_schedule(self, user_data: List[LampEvent], scheduler: MimickingAlgorithm) -> Schedule:
         schedule = scheduler.createSchedule(user_data)
-        print(schedule)
         return schedule
