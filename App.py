@@ -10,6 +10,7 @@ from model.model import Model
 from model.algorithm.random_malg import RandomMAlg
 from model.algorithm.abstract_mimicking_algorithm import Schedule
 from model.demo_model import DemoModel
+from model.mqtt_light_service import MqttLightService
 import threading
 from model.algorithm.nn_model.nn_alg import NNAlg
 from model.timer import Timer
@@ -28,15 +29,16 @@ class Application:
         slider = TimeSlider(self.app, model)
         clock_widget = ClockWidget(self.app, self.model)
         
-        # Actitvation button and schedule list
+        # Activation button and schedule list
         activation_btn = ActivationButton(self.app, self.model)
         schedule_list = ScheduleList(self.app, activation_btn, self.model)
         activation_btn.add_observer(schedule_list)
 
         apt = Apt(self.app, self.model)
-        
+        mqtt_light_service = MqttLightService("localhost", 1883, "zigbee2mqtt")
+
         model.add_observer(apt)
-        #TODO add mqtt_light_service as observer of model
+        model.add_observer(mqtt_light_service)
         
     def run_model(self):
         self.model.mainloop()
@@ -48,8 +50,8 @@ class Application:
 if __name__ == "__main__":
     start_time = datetime.now().replace(hour=0,minute=0,second=0)
     timer = Timer()
-    schduler = NNAlg()
-    model = DemoModel(schduler, timer, start_time)
+    scheduler = NNAlg()
+    model = DemoModel(scheduler, timer, start_time)
     app = Application(model, start_time)
     # view_thread: threading.Thread = threading.Thread(target=app.run_ui)
     model_thread: threading.Thread = threading.Thread(target=app.run_model)
@@ -58,5 +60,3 @@ if __name__ == "__main__":
     
     model_thread.start()
     app.run_ui()
-    
-    
