@@ -1,4 +1,4 @@
-from abstract_event_observer import EventObserver
+from model.abstract_event_observer import EventObserver
 from model.events.lamp_event import LampEvent
 import json
 import paho.mqtt.client as mqtt
